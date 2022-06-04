@@ -6,4 +6,8 @@
 npm install -g typescript
 ```
 
-## 插曲
+安装完成后，在控制台运行如下命令，检查安装是否成功(3.x):
+
+```bash
+tsc -V
+```
