@@ -15,6 +15,16 @@ console.log(greeter(user))
 
 ## 编译代码
 
+我们使用了 `.ts` 扩展名，但是这段代码仅仅是 JavaScript 而已。
+
+在命令行上，运行 TypeScript 编译器：
+
+```bash
+tsc greeter.ts
+```
+
+输出结果为一个 `greeter.js` 文件，它包含了和输入文件中相同的 JavaScript 代码。
+
 ## 类型注解
 
 ## 接口
