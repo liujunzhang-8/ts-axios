@@ -75,6 +75,63 @@ error TS2345: Argument of type 'number[]' is not assignable to prameter of type 
 
 ## 接口
 
+让我们继续扩展这个示例应用，这里我们使用接口来描述一个拥有 `firstName` 和 `lastName` 字段的对象。在 `TypeScript` 里，只在两个类型内部的结构兼容，那么这两个类型就是兼容的。这就允许我们在实现接口时候只要保证包含了接口要求的结构就可以，而不必明确地使用 `implements` 语句。
+
+```typescript
+interface Person {
+  firstName: string
+  lastName: string
+}
+
+function greeter (person: Person) {
+  return 'Hello, ' + person.firstName + ' ' + person.lastName
+}
+
+let user = {
+  firstName: 'Gorgio',
+  lastName: 'Huang'
+}
+
+console.log(greeter(user))
+```
+
 ## 类
 
+最后，让我们使用类来写这个例子。TypeScript 支持 JavaScript 的新特性，比如支持基于类的面向对象编程。
+
+让我们创建一个 `Student` 类，它带有一个构造函数和一些公共字段。因为类的字段包含了接口所需要的字段，所以他们能很好的兼容。
+
+还要注意的是，我在类的声明上会注明所有的成员变量，这样比较一目了然。
+
+```typescript
+class User {
+  fullName: string
+  firstName: string
+  lastName: string
+
+  constructor () {
+    this.firstName = firstName
+    this.lastName = lastName
+    this.fullName = firstName + ' ' + lastName
+  }
+}
+
+interface Person {
+  firstName: string
+  lastName: string
+}
+
+function greeter (person: Person) {
+  return 'Hello, ' + person.firstName + ' ' + person.lastName
+}
+
+let user = new User('Gorgio', 'Huang')
+
+console.log(greeter(user))
+```
+
+重新运行 `tsc greeter.ts`, 你会看到 TypeScript 里的类只是一个语法糖，本质上还是 `JavaScript` 函数的实现。
+
 ## 总结
+
+到这里，你已经对 TypeScript 有了一个大致的印象，那么下一章让我们来一起学习 TypeScript 的一些常用语法吧。
