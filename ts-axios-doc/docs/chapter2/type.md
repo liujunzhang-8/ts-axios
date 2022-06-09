@@ -141,7 +141,32 @@
 
  ## void
 
+ 某种程度上来说，`void` 类型像是与 `any` 类型相反，它表示没有任何类型。当一个函数没有返回值时，你通常会见到其返回值类型是 `void`：
+
+ ```typescript
+ function warnUser(): void {
+   console.log('This is my warning message')
+ }
+ ```
+
+ 声明一个 `void` 类型的变量没有什么大用，因为你只能为它赋予 `undefined` 和 `null`：
+
+ ```typescript
+ let unusable: void = undefined
+ ```
+
  ## null 和 undefined
+
+ TypeScript 里，`undefined` 和 `null` 两者各自有自己的类型分别叫做 `undefined` 和 `null`。和 `void` 相似，它们的本身的类型用处不是很大：
+
+ ```typescript
+ let u: undefined = undefined
+ let n: null = null
+ ```
+
+ 默认情况下 `null` 和 `undefined` 是所有类型的子类型。就是说你可以把 `null` 和 `undefined` 赋值给 `number` 类型的变量。
+
+ 然而，当你指定了 `--strictNullChecks` 标记，`null` 和 `undefined` 只能赋值给 `void` 和它们各自，这能避免很多常见的问腿。也许在某处你想传入一个 `string` 或 `null` 或 `undefined`，你可以使用联合类型 `string | null | undefined`。再次说明，稍后我们会介绍联合类型。
 
  ## never
 
