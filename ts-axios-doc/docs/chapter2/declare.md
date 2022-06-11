@@ -22,7 +22,7 @@ var a = 10
 function f() {
   var message = 'Hello World!'
 
-  return message
+  return message  
 }
 ```
 
@@ -44,6 +44,41 @@ g() // return 11
 上面的例子是一个典型的闭包场景，`g` 可以获取到 `f` 函数里定义的 `a` 变量。每当 `g` 被调用时，它都可以访问到 `f` 里的 `a` 变量。即使当 `g` 在 `f` 已经执行完后才被调用，它仍然可以访问 `a`。
 
 ### 作用域规则
+
+`var` 声明有些奇怪的作用域规则。看下面的例子：
+
+```javascript
+function f(shouldInitialize) {
+  if (shouldInitialize) {
+    var x = 10
+  }
+
+  return x
+}
+
+f(true) // returns '10'
+f(false) // returns 'undefined'
+```
+
+有些同学可能要多看几遍这个例子。变量 `x` 是定义在 `if` 语句里面，但是我们却可以在语句的外面访问它。这是因为 `var` 声明的作用域是函数作用域，函数参数也使用函数作用域。
+
+这些作用域规则可能会引发一些错误。其中之一就是，多次声明同一个变量并不会报错：
+
+```javascript
+function sumMatrix(matrix) {
+  var sum = 0
+  for (var i = 0; i < matrix.length; i++) {
+    var currentRow = matrix[i]
+    for (var i = 0; i < currentRow.length; i++) {
+      sum += currentRow[i]
+    }
+  }
+
+  return sum
+}
+```
+
+这里很容易看出一些问题，里层的 `for` 循环会覆盖变量 `i`，因为所有 `i` 都引用相同的函数作用域内的变量。有经验的开发者们很清楚，这些问题可能在代码审查时漏掉，引发无穷的麻烦。
 
 ### 捕获变量怪异之处
 
