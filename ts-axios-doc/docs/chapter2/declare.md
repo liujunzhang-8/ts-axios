@@ -208,6 +208,74 @@ let a
 
 ### 重定义及屏蔽
 
+我们提过使用 `var` 声明时，它不在乎你声明多少次；你只会得到 1 个。
+
+```javascript
+function f(x) {
+  var x
+  var x
+
+  if (true) {
+    var x
+  }
+}
+```
+在上面的例子中，所有 `x` 的声明实际上都引用一个相同的 `x`，并且这是完全有效的代码，但这经常会成为 `bug` 的来源。幸运的是 `let` 的声明就不会这么宽松了。
+
+```typescript
+let x = 10
+let x = 20 // 错误，不能在 1 个作用域里多次声明 x
+```
+
+并不是要求两个均是块级作用域的声明 TypeSCript 才会给出一个错误的警告。
+
+```typescript
+function f(x) {
+  let x = 100 // Error: 干扰参数声明
+}
+
+function g() {
+  let x = 100
+  var x = 100 // Error: 不能同时具有 x 的两个声明
+}
+```
+
+并不是说块级作用域变量不能用函数作用域变量来声明。而是块级作用域变量需要在明显不同的块里声明。
+
+```typescript
+function f(condition, x) {
+  if (condition) {
+    let x = 100
+    return x
+  }
+
+  return x
+} 
+
+f(false, 0) // returns 0
+f(true, 0) // returns 100
+```
+
+在一个嵌套作用域里引入一个新名字的行为称做屏蔽。它是一把双刃剑，它可能会不小心地引入新问题，同时也可能会解决一些错误。例如，假设我们现在用 `let` 重写之前的 `sumMatrix` 函数。
+
+```typescript
+function sumMatrix(matrix: number[] []) {
+  let sum = 0
+  for (let i = 0; i < matrix.length; i++) {
+    let currentRow = matrix[i]
+    for (let i = 0; i < currentRow.length; i++) {
+      sum += currentRow[i]
+    }
+  }
+
+  return sum
+}
+```
+
+这个版本的循环能得到正确的结果，因为内层循环的 `i` 可以屏蔽掉外层循环的 `i`。
+
+通常来讲应该避免使用屏蔽，因为我们需要写出清晰的代码。同时也有些场景适合利用它，你需要好好权衡一下。
+
 ### 块级作用域变量的获取
 
 ## const 声明
