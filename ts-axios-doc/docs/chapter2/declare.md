@@ -457,4 +457,62 @@ function keepWholeObject(wholeObject: { a: string, b?: number }) {
 
 ### 函数声明
 
+解构也能用于函数声明。看以下简单的情况：
+
+```typescript
+type C = { a: string, b?: number } {
+  function f({a, b}: C): void {
+    // ...
+  }
+}
+```
+
+但是，通常情况下更多的是指定默认值，解构默认值有些棘手。首先，你需要在默认值之前设置其格式。
+
+```typescript
+function f({ a = '', b = 0 } = {}): void {
+  // ...
+}
+f()
+```
+
+> 上面的代码是一个类型推断的例子，将在后续章节介绍。
+
+其次，你需要知道在解构属性上给予一个默认或可选的属性用来替换主初始化列表。要知道 C 的定义有一个 b 可选属性：
+
+```typescript
+function f({a, b = 0 } = { a: '' }): void {
+  // ...
+}
+f({ a: 'yes' }) // OK, 默认 b = 0
+f()  // OK, 默认 a: '', b = 0
+f({}) // Error, 一旦传入参数则 a 是必须的
+```
+
+要小心使用解构。从前面的例子可以看出，就算是最简单的解构表达式也是难以理解的。尤其当存在深层嵌套解构的时候，就算这时没有堆叠在一起的重命名，默认值和类型注解，也是令人难以理解的。解构表达式要尽量保持小而简单。
+
 ## 展开
+
+```typescript
+let first = [1, 2]
+let second = [3, 4]
+let bothPlus = [0, ...first, ...second, 5]
+```
+
+这会令 `bothPlus` 的值为 `[0, 1, 2, 3, 4, 5]`。展开操作创建了 `first` 和 `second` 一份浅拷贝。它们不会被展开操作改变。
+
+你还可以展开对象：
+
+```typescript
+let defaults = { food: 'spicy', price: '$10', ambiance: 'noisy' }
+let search = { ...defaults, food: 'rich' }
+```
+
+search的值为 `{ food: 'rich', price: '$10', ambiance: 'noisy' }`。对象的展开要比数组的展开复杂的多。像数组展开一样，它是从左至右进行处理，但结果仍为对象。这就意味着出现在展开对象后面的属性会覆盖前面的属性。因此，如果我们修改上面的例子，在结尾处进行展开的话：
+
+```typescript
+let defaults = { food: 'spicy', price: '$10', ambiance: 'noisy' }
+let search = { food: 'rich', ...defaults }
+```
+
+那么，`defaults` 里的 `food` 属性会重写 `food: 'rich'`，在这里这并不是我们想要的结果。
