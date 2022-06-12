@@ -309,7 +309,42 @@ for (let i = 0; i < 10; i++) {
 
 ## const 声明 
 
+`const` 声明是声明变量的另一种方式。
+
+```typescript
+const numLivesForCat = 9
+```
+
+它们与 `let` 声明相似，但是就像它的名字所表达的，它们被赋值后不能再改变。换句话说，它们拥有与 `let` 相同的作用域规则，但是不能对它们重新赋值。
+
+这很好理解，它们引用的值是不可变的。
+
+```typescript
+const numLivesForCat = 9
+const kitty = {
+  name: 'Kitty',
+  numLives: numLivesForCat
+}
+
+// Error
+kitty = {
+  name: 'Tommy',
+  numLives: numLivesForCat
+}
+
+// OK
+kitty.name = 'Jerry'
+kitty.numLives--
+```
+
+除非你使用特殊的方法去避免，实际上 `const` 变量的内部状态是可修改的。幸运的是， `TypeScript` 允许你将对象的成员设置成只读的。接口一章有详细说明。
+
 ## let vs const
+
+现在我们有两种作用域相似的声明方式，我们自然会问到底应该使用哪个。与大多数泛泛的问题一样，答案是：依情况而定。
+
+
+使用最小特权原则，所有变量除了你计划去修改的都应该使用 `const` 。基本原则就是如果一个变量不需要对它写入，那么其它使用这些代码的人也不能够写入它们，并且要思考为什么会需要对这些变量重新赋值。使用 `const` 也可以让我们更容易的推测数据的流动。
 
 ## 解构
 
