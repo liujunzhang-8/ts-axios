@@ -350,7 +350,78 @@ kitty.numLives--
 
 ### 解构数组
 
+最简单的解构莫过于数组的解构赋值了：
+
+```typescript
+let input = [1, 2]
+let [first, second] = input
+console.log(first) // outputs 1
+console.log(second) // outputs 2
+```
+
+这创建了 2 个命名变量 `first` 和 `second`。相当于使用了索引，但更为方便：
+
+```typescirpt
+let first = input[0]
+let second = input[1]
+```
+
+作用于函数参数：
+
+```typescript
+let input: [number, number] = [1, 2]
+
+function f([first, second]: [number, number]) {
+  console.log(first)
+  console.log(second)
+}
+
+f(input)
+```
+
+你可以在数组里使用 `...` 语法创建剩余变量：
+
+```typescript
+let [first, ...rest] = [1, 2, 3, 4]
+console.log(first) // outputs 1
+console.log(rest)  // outputs [2, 3, 4]
+```
+
+你也可以忽略你不关心的尾随元素：
+
+```typescript
+let [first] = [1, 2, 3, 4]
+console.log(first) // outputs 1
+```
+
+或其它元素：
+
+```typescript
+let [, second, , fourth] = [1, 2, 3, 4]
+```
+
 ### 对象解构
+
+你也可以解构对象：
+
+```typescript
+let o = {
+  a: 'foo',
+  b: 12,
+  c: 'bar'
+}
+let { a, b } = o
+
+```
+
+这通过 `o.a` 和 `o.b` 创建了 `a` 和 `b`。注意，如果你不需要 `c` 你可以忽略它。
+
+你可以在对象里使用 `...` 语法创建剩余变量：
+
+```typescript
+let { a, ...passthrough } = o
+let total = passthrough.b + passthrough.c.length
+```
 
 ### 属性重命名
 
