@@ -152,6 +152,60 @@ let hello = 'hello'
 
 ### 块作用域
 
+当用 `let` 声明一个变量，它使用的是块作用域。不同于使用 `var` 声明的变量那样可以在包含它们的函数外访问，块作用域变量在包含它们的块或 `for` 循环之外是不能访问的。
+
+```typescript
+function f(input: boolean) {
+  let a = 100
+
+  if(input) {
+    // OK: 仍然能访问到 a
+    let b = a + 1
+    return b
+  }
+
+  // Error: 'b' 在这里不存在
+  return b
+}
+```
+这里我们定义了 2 个变量 `a` 和 `b` 。 `a` 的作用域是 `f` 函数体内，而 `b` 的作用域是 `if` 语句块里。
+
+在 `catch` 语句里声明的变量也具有同样的作用域规则。
+
+```typescript
+try {
+  throw 'Oh no!';
+}
+catch (e) {
+  console.log('Catch it.')
+}
+
+// Error: 'e' 在这里不存在
+console.log(e)
+```
+
+拥有块级作用域的变量的另一个特点是，它们不能再被声明之前读或写。虽然这些变量始终“存在”于它们的作用域里，但在直到声明它的代码之前的区域都属于 *暂时性死区*。它只是用来说明我们不能在 `let` 语句之前访问它们，幸运的是 `TypeScript` 可以告诉我们这些信息。
+
+```typescript
+a++ // TS2448: Block-scoped variable 'a' used before its declaration
+let a 
+```
+
+注意一点，我们仍然可以在一个拥有块作用域变量被声明前获取它，只是我们不能在变量声明前去调用那个函数。如果生成代码目标为ES2015，现代的运行时会抛出一个错误；然而，现今 TypeScript 是不会报错的。
+
+```typescript
+function foo() {
+  // okey to capture 'a'
+  return a
+}
+
+// 不能在 'a' 被声明前调用 'foo'
+// 运行时应该抛出错误
+foo()
+
+let a
+```
+
 ### 重定义及屏蔽
 
 ### 块级作用域变量的获取
