@@ -38,9 +38,101 @@ printLabel(myObj)
 
 ## 可选属性
 
+接口里的属性不全都是必需的。有些是只在某些条件下存在，或者根本不存在。例如给函数传入的参数对象中只有部分属性赋值了。
+
+```typescript
+interface Square {
+  color: string,
+  area: number
+}
+
+interface SquareConfig {
+  color?: string
+  width?: number
+}
+
+function createSquare (config: SquareConfig): Square {
+  let newSquare = {color: 'white', area: 100}
+  if (config.color) {
+    newSquare.color = config.color
+  }
+  if (config.width) {
+    newSquare.area = config.width * config.width
+  }
+  return newSquare
+}
+
+let mySquare = createSquare({color: 'black'})
+```
+
+带有可选属性的接口与普通的接口定义差不多，只是在可选属性名字定义的后面加一个 `?` 符号。
+
+可选属性的好处之一是可以对可能存在的属性进行预定义，好处之二是可以捕获引用了不存在的属性时的错误。比如，我们故意将 `createSquare` 里的 `color` 属性名拼错，就会得到一个错误提示：
+
+```typescript
+interface Square {
+  color: string,
+  area: number
+}
+
+interface SquareConfig {
+  color?: string;
+  width?: number;
+}
+
+function createSquare (config: SquareConfig): Square {
+  let newSquare = {color: 'white', area: 100}
+  if (config.clor) {
+    // Error: 属性 'clor' 不存在于类型 'SquareConfig' 中
+    newSquare.color = config.color
+  }
+  if (config.width) {
+    newSquare.area = config.width * config.width
+  }
+  return newSquare
+}
+
+let mySquare = createSquare({color: 'black'})
+```
+
 ## 只读属性
 
+一些对象属性只能在对象刚刚创建的时候修改其值。你可以在属性名前用 `readonly` 来指定只读属性：
+
+```typescript
+interface Point {
+  readonly x: number
+  readonly y: number
+}
+```
+
+你可以通过赋值一个对象字面量来构造一个 `Point`。赋值后，`x` 和 `y` 再也不能被改变了。
+
+```typescript
+let p1: Point = { x: 10, y: 20 }
+p1.x = 5 // error
+```
+
+TypeScript 具有 `ReadonlyArray<T>` 类型，它与 `Array<T>` 相似，只是把所有可变方法去掉了，因此可以确保数组创建后再也不能被修改：
+
+```typescript
+let a: number[] = [1, 2, 3, 4]
+let ro: ReadonlyArray<number> = a
+ro[0] = 12 // error!
+ro.push(5) // error!
+ro.length = 100 // error!
+a = ro // error!
+```
+
+上面代码的最后一行，可以看到就算把整个 `ReadonlyArray` 赋值到一个普通数组也是不可以的。但是你可以用类型断言重写：
+
+```typescript
+a = ro as number[]
+```
+
 ## readonly vs const
+
+最简单判断该用 `readonly` 还是 `const` 的方法是看要把它作为变量使用还是作为一个属性。作为变量使用的话用 `const`，若作为属性则使用 `readonly`。
 
 ## 额外的属性检查
 
