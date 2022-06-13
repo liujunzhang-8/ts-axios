@@ -1,86 +1,62 @@
-# 类型推断
+# 接口
 
-这节介绍 TypeScript 里的类型推断。即，类型是在哪里如何被推断的。
+Typescript 的核心原则之一是对值所具有的结构进行类型检查。它有时被称做"鸭式辨型法"或"结构性子类型化"。在 TypeScript 里，接口的作用就是为这些类型命名和为你的代码或第三方代码定义契约。
 
-## 基础
+## 接口初探
 
-TypeScript 里，在有些没有明确指出类型的地方，类型推断会帮助提供类型。如下面的例子：
-
-```typescript
-let x = 3
-```
-
-变量 `x` 的类型被推断为数字。这种推断发生在初始化变量和成员，设置默认参数值和决定函数返回值时。
-
-大多数情况下，类型推断是直截了当地。后面的小节，我们会浏览类型推断时的细微差别。
-
-## 最佳通用类型
-
-有些时候我们需要从几个表达式中推断类型，会使用这些表达式的类型来推断出一个最合适的通用类型。例如，
+下面通过一个简单示例来观察接口是如何工作的：
 
 ```typescript
-let x = [0, 1, null]
-```
-
-为了推断 `x` 的类型，我们必须考虑所有元素的类型。这里有两种选择：`number` 和 `null`。计算通用类型算法会考虑所有的候选类型，并给出一个兼容所有候选类型的类型。
-
-由于最终的通用类型取自候选类型，有些时候候选类型共享一个公共结构，但是却没有一个类型能作为所有候选类型的超级类型。例如：
-
-```typescript
-class Animal {
-  numLegs: number
+function printLabel(labelledObj: { label: string }) {
+  console.log(labelledObj.label)
 }
 
-class Bee extends Animal {
-
-}
-
-class Lion extends Animal {
-
-}
-
-let zoo = [new Bee(), new Lion()]
+let myObj = { size: 10, label: 'Size 10 Object' }
+printLabel(myObj)
 ```
 
-这里，我们想让 `zoo` 被推断为 `Animal[]` 类型，但是这个数组里没有对象是 `Animal` 类型的，因此不能推断出这个结果。为了更正，我们可以明确的声明我们期望的类型：
+类型检查器会查看 `printLabel` 的调用。`printLabel` 有一个参数，并要求这个对象参数有一个名为 `label` 类型为 `string` 的属性。需要注意的是，我们传入的对象参数实际上会包含很多属性，但是编译器只会检查那些必需的属性是否存在，以及其类型是否匹配。然而，有些时候 TypeScript 却并不会这么宽松，我们下面稍作讲解。
+
+下面我们重写上面的例子，这次使用接口来描述：必须包含一个`label` 属性且类型为 `string`:
 
 ```typescript
-let zoo: Animal[] = [new Bee(), new Lion()]
-```
-
-如果没有找到最佳通用类型的话，类型推断的结果为联合数组类型，`(Bee | Lion)[]`
-
-## 上下文类型
-
-有些时候，TypeScript 类型推断会按另外一种方式，我们称作“上下文类型”；上下文类型的出现和表达式的类型以及所处的位置相关。
-比如：
-
-```typescript
-window.onmousedown = function (mouseEvent) {
-  console.log(mouseEvent.clickTime) // Error
-}
-```
-
-这个例子会得到一个类型错误，TypeScript 类型检查器使用 `window.onmousedown` 函数的类型来推断右边函数表达式的类型。因此，就能推断出 `mouseEvent` 参数的类型了，所以 `mouseEvent` 访问了一个不存在的属性，就报错了。
-
-如果上下文类型表达式包含了明确的类型信息，上下文的类型被忽略。重写上面的例子：
-
-```typescript
-window.onmousedown = function (mouseEvent: any) {
-  console.log(mouseEvent.clickTime) // OK
-}
-```
-
-这个函数表达式有明确的参数类型注解，上下文类型被忽略。这样的话就不报错了，因为这里不会使用到上下文类型。
-
-上下文类型会在很多情况下使用到。通常包含函数的参数，赋值表达式的右边，类型断言，对象成员，数组字面量和返回值语句。上下文类型也会做为最佳通用类型的候选类型。比如：
-
-```typescript
-function createZoo(): Animal[] {
-  return [new Bee(), new Lion()]
+interface LabelledValue {
+  label: string
 }
 
-let zoo = createZoo()
+function printLabel(labelledObj: LabelledValue) {
+  console.log(labelledObj.label)
+}
+
+let myObj = { size: 10, label: 'Size 10 Object' }
+printLabel(myObj)
 ```
 
-这个例子里，最佳通用类型有 `3` 个候选者: `Animal`，`Bee` 和 `Lion`。其中，`Animal` 会被作为最佳通用类型。
+`LabelledValue` 接口就好比一个名字，用来描述上面例子里的结构。它代表了有一个 `label` 属性且类型为 `string` 的对象。需要注意的是，我们在这里并不能像在其它语言里一样，说传给 `printLabel` 的对象实现了这个接口。我们只会去关注值的外形。只要传入的对象满足上面提到的必要条件，那么它就是被允许的。
+
+还有一点值得提的是，类型检查器不会去检查属性的顺序，只要相应的属性存在并且类型也是对的就可以。
+
+## 可选属性
+
+## 只读属性
+
+## readonly vs const
+
+## 额外的属性检查
+
+## 函数类型
+
+## 可索引的类型
+
+## 类类型
+
+### 实现接口
+
+### 类静态部分与实例部分的区别
+
+## 继承接口
+
+## 混合类型
+
+## 接口继承类
+
