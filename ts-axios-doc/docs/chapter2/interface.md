@@ -423,5 +423,33 @@ square.penWidth = 5.0
 
 ## 混合类型
 
+先前我们提过，接口能够描述 JavaScript 里丰富的类型。因为 JavaScript 其动态灵活的特点，有时你会希望一个对象可以同时具有上面提到的多种类型。
+
+一个例子就是，一个对象可以同时做为函数和对象使用，并带有额外的属性。
+
+```typescript
+interface Counter {
+  (start: number): string
+  interval: number
+  reset(): void
+}
+
+function getCounter(): Counter {
+  let counter = (function (start: number) { }) as Counter
+  counter.interval = 123
+  counter.reset = function () { }
+  return counter
+}
+
+let c = getCounter()
+c(10)
+c.reset()
+c.interval = 5.0
+```
+
+在使用 JavaScript 第三方库的时候，你可能需要像上面那样去完整地定义类型。
+
 ## 接口继承类
+
+
 
