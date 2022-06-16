@@ -6,7 +6,25 @@
 
 下面看一个使用类的例子:
 
+```typescript
+class Greeter {
+  greeting: string
+  constructor(message: string) {
+    this.greeting = message
+  }
+  greet() {
+    return 'Hello, ' + this.greeting
+  }
+}
 
+let greeter = new Greeter('world')
+```
+
+如果你使用过 C# 或 Java，你会对这种语法非常熟悉。我们声明一个 `Greeter` 类。这个类有 3 个成员：一个叫做 `greeting` 的属性，一个构造函数和一个 `greet` 方法。
+
+你会注意到，我们引用任何一个类成员的时候都用了 `this`。它表示我们访问的是类的成员。
+
+最后一行，我们使用 `new` 构造了 `Greeter` 类的一个实例。它会调用之前定义的构造函数，创建一个 `Greeter` 类型的新对象，并执行构造函数初始化它。
 
 ## 继承
 
