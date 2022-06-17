@@ -241,7 +241,34 @@ let john = new Person('John')  // 错误：'Person' 的构造函数是被保护�
 
 ## readonly 修饰符
 
+你可以使用 `readonly` 关键字将属性设置为只读的。只读属性必须在声明时或构造函数里被初始化。
+
+```typescript
+class Person {
+  readonly name: string
+  constructor(name: string) {
+    this.name = name
+  }
+}
+
+let john = new Person('John')
+john.name = 'peter'
+```
+
 ### 参数属性
+
+在上面的例子中，我们必须在 `Person` 类里定义一个只读成员 `name` 和一个参数为 `name` 的构造函数，并且立刻将 `name` 的值赋给 `this.name`，这种情况经常会遇到。参数属性可以方便地让我们在一个地方定义并初始化一个成员。下面的例子是对之前 `Person` 类的修改版，使用了参数属性：
+
+```typescript
+class Person {
+  constructor(readonly name: string) {
+  }
+}
+```
+
+注意看我们是如何舍弃参数 `name`，仅在构造函数里使用 `readonly name: string` 参数来创建和初始化 `name` 成员。我们把声明和赋值合并至一处。
+
+参数属性通过给构造函数参数前面添加一个访问限定符来声明。使用 `private` 限定一个参数属性会声明并初始化一个私有成员；对于 `public` 和 `protected` 来说也是一样。
 
 ## 存取器
 
