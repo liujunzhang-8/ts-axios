@@ -181,6 +181,64 @@ animal = employee // 错误: Animal 与 Employee 不兼容。
 
 ### 理解 protected
 
+`protected` 修饰符与 `private` 修饰符的行为很相似，但有一点不同，`protected` 成员在派生类中仍然可以访问。例如：
+
+```typescript
+class Person {
+  protected name: string
+  constructor(name: string) {
+    this.name = name
+  }
+}
+
+class Employee extends Person {
+  private department: string
+
+  constructor(name: string, department: string) {
+    super(name)
+    this.department = department
+  }
+
+  getElevatorPitch() {
+    return `Hello, my name is ${this.name} and I work in ${this.department}.`
+  }
+}
+
+let howard = new Employee('Howard', 'Sales')
+console.log(howard.getElevatorPitch());
+console.log(howard.name) // error;
+```
+
+注意，我们不能在 `Person` 类外使用 `name`，但是我们仍然可以通过 `Employee` 类的实例方法访问，因为 `Employee` 是由 `Person` 派生而来的。
+
+构造函数也可以被标记成 `protected`。这意味着这个类不能在包含它的类外被实例化，但是能被继承。比如：
+
+```typescript
+class Person {
+  protected name: string
+  protected constructor(name: string) {
+    this.name = name
+  }
+}
+
+// Employee 能够继承 Person
+class Employee extends Person {
+  private department: string
+
+  constructor(name: string, department: string) {
+    super(name)
+    this.department = department
+  }
+
+  public getElevatorPitch() {
+    return `Hello, my name is ${this.name} and I work in ${this.department}.`
+  }
+}
+
+let howard = new Employee('Howard', 'Sales')
+let john = new Person('John')  // 错误：'Person' 的构造函数是被保护的。
+```
+
 ## readonly 修饰符
 
 ### 参数属性
