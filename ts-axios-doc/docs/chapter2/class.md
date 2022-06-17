@@ -327,7 +327,35 @@ if (employee.fullName) {
 
 ## 静态属性
 
+到目前为止，我们只讨论了类的实例成员，那些仅当类被实例化的时候才会被初始化的属性。我们也可以创建类的静态成员，这些属性存在于类本身上面而不是类的实例上。在这个例子里，我们使用 `static` 定义 `origin`，因为它是所有网格都会用到的属性。每个实例想要访问这个属性的时候，都要在 `origin` 前面加上类名。如同在实例属性上使用 `this.xxx` 来访问属性一样，这里我们使用 `Grid.xxx` 来访问静态属性。
+
+```typescript
+class Grid {
+  static origin = {x: 0, y: 0}
+
+  scale: number
+
+  constructor (scale: number) {
+    this.scale = scale
+  }
+
+  calculateDistanceFromOrigin(point: {x: number; y: number}) {
+    let xDist = point.x - Grid.origin.x
+    let yDist = point.y - Grid.origin.y
+    return Math.sqrt(xDist * xDist + yDist * yDist) * this.scale
+  }
+}
+
+let grid1 = new Grid(1.0) // 1x scale
+let grid2 = new Grid(5.0) // 5x scale
+
+console.log(grid1.calculateDistanceFromOrigin({x: 3, y: 4}));
+console.log(grid2.calculateDistanceFromOrigin({x: 3, y: 4}));
+```
+
 ## 抽象类
+
+
 
 ## 高级技巧
 
