@@ -272,6 +272,59 @@ class Person {
 
 ## 存取器
 
+`TypeScript` 支持通过 `getters/setters` 来截取对对象成员的访问。它能帮助你有效的控制对对象成员的访问。
+
+下面来看如何把一个简单的类改写成使用 `get` 和 `set`。首先，我们从一个没有使用存取器的例子开始。
+
+```typescript
+class Employee {
+  fullName: string
+}
+
+let employee = new Employee()
+employee.fullName = 'Bob Smith'
+if(employee.fullName) {
+  console.log(employee.fullName)
+}
+```
+
+我们可以设置 `fullName`，因为它是 `public` 的，有时候当我们去修改它的时候触发一些额外逻辑，存取器就派上用场了。
+
+下面这个版本里，我们先检查用户密码是否正确，然后再允许其修改员工信息。我们把对 `fullName` 的直接访问改成了可以检查密码的 `set` 方法。我们也加了一个 `get` 方法，让上面的例子仍然可以工作。
+
+```typescript
+let passcode = 'secret passcode'
+
+class Employee {
+  private _fullName: string
+
+  get fullName(): string {
+    return this._fullName
+  }
+
+  set fullName(newName: string) {
+    if (passcode && passcode == 'secret passcode') {
+      this._fullName = newName
+    } else {
+      console.log('Error: Unauthorized update of employee!');
+      
+    }
+  }
+}
+
+let employee = new Employee()
+employee.fullName = 'Bob Smith'
+if (employee.fullName) {
+  console.log(employee.fullName);
+}
+```
+
+我们可以修改一下密码，来验证一下存取器是否是工作的。当密码不对时，会提示我们没有权限去修改员工。
+
+对于存取器有下面几点需要注意的：
+
+首先，存取器要求你将编译器设置为输出 ECMAScript 5 或更高。不支持降级到 ECMAScript 3。其次，只带有 `get` 不带有 `set` 的存取器自动被推断为 `readonly`。这在从代码生成 `.d.ts` 文件时是有帮助的，因为利用这个属性的用户会看到不允许改变它的值。
+
 ## 静态属性
 
 ## 抽象类
