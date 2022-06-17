@@ -129,6 +129,56 @@ class Animal {
 
 ### 理解 private
 
+当成员被标记成 `private` 时，它就不能在声明它的类的外部访问。比如：
+
+```typescript
+class Animal {
+  private name: string
+  constructor(name: string) {
+    this.name = name
+  }
+}
+
+new Animal('Cat').name  // 错误: 'name' 是私有的。
+```
+
+TypeScript 使用的是结构性类型系统。当我们比较两种不同的类型时，并不在乎它们从何处而来，如果所有成员的类型都是兼容的，我们就认为它们的类型是兼容的。
+
+然而，当我们比较带有 `private` 或 `protected` 成员的类型的时候，情况就不同了。如果其中一个类型里包含一个 `private` 成员，那么只有当另外一个类型中也存在这样一个 `private` 成员，并且它们都是来自同一处声明时，我们才认为这两个类型是兼容的。对于 `protected` 成员也使用这个规则。
+
+下面来看一个例子，更好地说明了这一点：
+
+```typescript
+class Animal {
+  private name: string
+  constructor(name: string) {
+    this.name = name
+  }
+}
+
+class Rhino extends Animal {
+  constructor() {
+    super('Rhino')
+  }
+}
+
+class Employee {
+  private name: string
+  constructor(name: string) {
+    this.name = name
+  }
+}
+
+let animal = new Animal('Goat')
+let rhino = new Rhino()
+let employee = new Employee('Bob')
+
+animal = rhino
+animal = employee // 错误: Animal 与 Employee 不兼容。
+```
+
+这个例子中有 `Animal` 和 `Rhino` 两个类，`Rhino` 是 `Animal` 类的子类。还有一个 `Employee` 类，其类型看上去与 `Animal` 是相同的。我们创建了几个这些类的实例，并相互赋值来看看会发生什么。因为 `Animal` 和 `Rhino` 共享了来自 `Animal` 里的私有成员定义 `private name: string`，因此它们是兼容的。然而 `Employee` 却不是这样的。当把 `Employee` 赋值给 `Animal` 的时候，得到一个错误，说它们的类型不兼容。尽管 `Employee` 里也有一个私有成员 `name`，但它明显不是 `Animal` 里面定义的那个。
+
 ### 理解 protected
 
 ## readonly 修饰符
