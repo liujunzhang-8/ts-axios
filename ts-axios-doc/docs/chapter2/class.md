@@ -355,10 +355,74 @@ console.log(grid2.calculateDistanceFromOrigin({x: 3, y: 4}));
 
 ## 抽象类
 
+抽象类作为其它派生类的基类使用。它们一般不会直接被实例化。不同于接口，抽象类可以包含成员的实现细节。`abstract` 关键字是用于定义抽象类和在抽象类内部定义抽象方法。
 
+```typescript
+abstract class Animal {
+  abstract makeSound(): void
+  move(): void {
+    console.log('roaming the earch...');
+    
+  }
+}
+```
+
+抽象类中的抽象方法不包含具体实现并且必须在派生类中实现。抽象方法的语法与接口方法相似。两者都是定义方法签名但不包含方法体。然而，抽象方法必须包含 `abstract` 关键字并且可以包含访问修饰符。
+
+```typescript
+abstract class department {
+  name: string
+
+  constructor(name: string) {
+    this.name = name
+  }
+
+  printName(): void {
+    console.log('Department name: ' + this.name);
+    
+  }
+  abstract printMeeting(): void // 必须在派生类中实现
+}
+
+class AccountingDepartment extends Department {
+  constructor() {
+    super('Accounting and Auditing') // 在派生类的构造函数中必须调用 super()
+  }
+
+  printMeeting(): void {
+    console.log('The Accounting Department meets each Monday at 10am.');
+  }
+
+  generateReports(): void {
+    console.log('Generating accounting reports...');
+  }
+}
+
+let department: Department // 允许创建一个对抽象类型的引用
+department = new Department() // 错误: 不能创建一个抽象类的实例
+department = new AccountingDepartment()  // 允许对一个抽象子类进行实例化和赋值
+department.printName()
+department.printMeeting()
+department.generateReports() // 错误: 方法在声明的抽象类中不存在。
+```
 
 ## 高级技巧
 
 ### 构造函数
 
 ### 把类当作接口使用
+
+如上一节里所讲的，类定义会创建两个东西：类的实例类型和一个构造函数。因为类可以创建出类型，所以你能够在允许使用接口的地方使用类。
+
+```typescript
+class Point {
+  x: number
+  y: number
+}
+
+interface Point3d extends Point {
+  z: number
+}
+
+let point3d: Point3d = {x: 1, y: 2, z: 3}
+```
