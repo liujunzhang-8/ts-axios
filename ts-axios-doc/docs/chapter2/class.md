@@ -111,6 +111,22 @@ Tommy moved 34m.
 
 ### 默认为 public
 
+在上面的例子中，我们可以自由的访问程序里定义的成员。如果你对其它语言中的类比较了解，就会注意到我们在之前二点代码里并没有使用 `public` 来做修饰；例如，C# 要求必须明确地使用 `public` 指定成员是可见的。在 TypeScript 里，成员都默认为 `public`。
+
+你也可以明确的将一个成员标记成 `public`。我们可以用下面的方式来重写上面的 `Animal` 类：
+
+```typescript
+class Animal {
+  public name: string
+  public constructor(name: string) {
+    this.name = name
+  }
+  public move(distance: number) {
+    console.log(`${this.name} moved ${distance}m.`);
+  }
+}
+```
+
 ### 理解 private
 
 ### 理解 protected
