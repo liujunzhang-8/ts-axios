@@ -93,6 +93,62 @@ function(x, y) {
 
 ## 可选参数和默认参数
 
+TypeScript 里的每个函数参数都是必须的。这不是指不能传递 `null` 或 `undefined` 作为参数，而是说编译器检查用户是否为每个参数都传入了值。编译器还会假设只有这些参数会被传递进函数。简短地说，传递给一个函数的参数个数必须与函数期望的参数个数一致。
+
+```typescript
+function buildName(firstName: string, lastName: string) {
+  return firstName + ' ' + lastName;
+}
+
+let result1 = buildName('Bob')  // Error, 参数过少
+let result2 = buildName('Bob', 'Adams', 'Sr.'); // Error, 参数过多
+let result3 = buildName('Bob', 'Adams'); // OK
+```
+
+JavaScript 里，每个参数都是可选的，可传可不传。没传参的时候，它的值就是 `undefined`。在 TypeScript 里我们可以在参数名旁使用 `?` 实现可选参数的功能。比如，我们想让 `lastName` 是可选的：
+
+```typescript
+function buildName(firstName: string, lastName?: string) {
+  if (lastName) {
+    return firstName + ' ' + lastName;
+  } else {
+    return firstName
+  }
+}
+
+let result1 = buildName('Bob')  // 现在正常了
+let result2 = buildName('Bob', 'Adams', 'Sr.'); // Error, 参数过多
+let result3 = buildName('Bob', 'Adams'); // OK
+```
+
+可选参数必须跟在必须参数后面。如果上例我们想让 `firstName` 是可选的，那么就必须调整它们的位置，把 `firstName` 放在后面。
+
+在 TypeScript 里，我们也可以为参数提供一个默认值当用户没有传递这个参数或传递的值是`undefined` 时。它们叫做有默认初始化值的参数。让我们修改上例，把 `lastName` 的默认值设置为 `"Smith"`。
+
+```typescript
+function buildName(firstName: string, lastName = 'Smith'): string {
+  return firstName + ' ' + lastName;
+}
+
+let result1 = buildName('Bob')  // 返回 "Bob Smith"
+let result2 = buildName('Bob', undefined); // 正常，同样 "Bob Smith"
+let result3 = buildName('Bob', 'Adams', 'Sr.'); // 错误，参数过多
+let result4 = buildName('Bob', 'Adams'); // OK
+```
+
+与普通可选参数不同的是，带默认值的参数不需要放在必须参数的后面。如果带默认值的参数出现在必须参数前面，用户必须明确的传入`undefined` 值来获得默认值。例如，我们重写最后一个例子，让 `firstName` 是带默认值的参数：
+
+```typescript
+function buildName(firstName = 'Will', lastName: string): string {
+  return firstName + ' ' + lastName;
+}
+
+let result1 = buildName('Bob')  // Error，参数过少
+let result3 = buildName('Bob', 'Adams', 'Sr.'); // Error, 参数过多
+let result3 = buildName('Bob', 'Adams'); // OK，返回 "Bob Adams"
+let result4 = buildName(undefined, 'Adams'); // OK，返回 "Will Adams"
+```
+
 ### 剩余参数
 
 ## this
