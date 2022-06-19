@@ -22,7 +22,7 @@ let myAdd = function(x, y) {
 
 在 JavaScript 里，函数可以使用函数体外部的变量。当函数这么做时，我们说它'捕获'了这些变量。至于为什么可以这样做以及其中的利弊超出了本文的范围，但是深刻理解这个机制对学习 JavaScript 和 TypeScript 会很有帮助。
 
-```javaScript
+```javascript
 let z = 100
 
 function addToZ(x, y) {
@@ -34,9 +34,62 @@ function addToZ(x, y) {
 
 ### 为函数定义类型
 
+让我们为上面那个函数添加类型：
+
+```typescript
+function add(x: number, y: number): number {
+  return x + y
+}
+
+let myAdd = function(x: number, y: number): number {
+  return x + y
+}
+```
+
+我们可以给每个参数添加类型之后再为函数本身添加返回值类型。Typescript 能够根据返回语句自动推断出返回值类型。
+
 ### 书写完整函数类型
 
+现在我们已经为函数指定了类型，下面让我们写出函数的完整类型。
+
+```typescript
+let myAdd: (x: number, y: number) => number = 
+function(x: number, y: number): number {
+  return x + y
+}
+```
+
+函数类型包含两部分：参数类型和返回值类型。当写出完整函数类型的时候，这两部分都是需要的。我们以参数列表的形式写出参数类型，为每个参数指定一个名字和类型。这个名字只是为了增加可读性。我们也可以这么写：
+
+```typescript
+let myAdd: (baseValue: number, increment: number) => number =
+function(x: number, y: number): number {
+  return x + y
+}
+```
+
+只要参数类型是匹配的，那么就认为它是有效的函数类型，而不在乎参数名是否正确。
+
+第二部分是返回值类型。对于返回值，我们在函数和返回值类型之前使用(`=>`)符号，使之清晰明了。如之前提到的，返回值类型是函数类型的必要部分，如果函数没有返回任何值，你也必须指定返回值类型为 `void` 而不能留空。
+
+函数的类型只是由参数类型和返回值组成的。函数中使用的捕获变量不会体现在类型里。实际上，这些变量是函数的隐藏状态并不是组成 API 的一部分。
+
 ### 推断类型
+
+尝试这个例子的时候，你会发现如果你在赋值语句的一边指定了类型但是另一边没有类型的话，TypeScript 编译器会自动识别出类型：
+
+```typescript
+let myAdd = function(x: number, y: number): number {
+  return x + y
+}
+
+let myAdd: (baseValue: number, increment: number) => number =
+function(x, y) {
+  return x + y
+}
+```
+
+这叫做"按上下文归类"，是类型推论的一种。它帮助我们更好地为程序指定类型。
 
 ## 可选参数和默认参数
 
