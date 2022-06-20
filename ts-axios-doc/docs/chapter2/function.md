@@ -177,7 +177,58 @@ let buildNameFun (fname: string, ...rest: string[]) => string = buildName
 
 ## this
 
+学习如何在 JavaScript 里正确使用 `this` 就好比一场成年礼。由于 TypeScript 是 JavaScript 的超集，TypeScript 程序员也需要弄清 `this` 工作机制并且当有 bug 的时候能够找出错误所在。幸运的是，TypeScript 能通知你错误地使用了 `this` 的地方。
+
 ### this 和箭头函数
+
+JavaScript里，`this` 的值在函数被调用的时候才会指定。这是个既强大又灵活的特点，但是你需要花点时间弄清楚函数调用的上下文是什么。但众所周知，这不是一件很简单的事，尤其是在返回一个函数或将函数当作参数传递的时候。
+
+下面看一个例子：
+
+```typescript
+let deck = {
+  suits: ['hearts', 'spades', 'clubs', 'diamonds'],
+  cards: Array(52),
+  createCardPicker: function() {
+    return function() {
+      let pickedCard = Math.floor(Math.random() * 52)
+      let pickedSuit = Math.floor(pickedCard / 13)
+
+      return {suit: this.suits[pickedSuit], card: pickedCard % 13}
+    }
+  }
+}
+
+let cardPicker = deck.createCardPicker()
+let pickedCard = cardPicker()
+
+console.log('card: ' + pickedCard.card + ' of ' + pickedCard.suit);
+```
+
+可以看到 `createCardPicker` 是个函数，并且它又返回了一个函数。如果我们尝试运行这个程序，会发现它并没有输出而是报错了。因为 `createCardPicker` 返回的函数里的 `this` 被设置成了 `global` 而不是 `deck` 对象。因为我们只是独立的调用了 `cardPicker()`。顶级的非方法式调用会将 `this` 视为 `global`。
+
+为了解决这个问题，我们可以在函数被返回时就绑好正确的`this`。这样的话，无论之后怎么使用它，都会引用绑定的`deck`对象。我们需要改变函数表达式来使用 ECMAScript 6 箭头语法。箭头函数能保存函数创建时的 `this` 值，而不是调用时的值：
+
+```typescript
+let deck = {
+  suits: ['hearts', 'spades', 'clubs', 'diamonds'],
+  cards: Array(52),
+  createCardPicker: function() {
+    // 注意：这里使用箭头函数
+    return () => {
+      let pickedCard = Math.floor(Math.random() * 52)
+      let pickedSuit = Math.floor(pickedCard / 13)
+
+      return {suit: this.suits[pickedSuit], card: pickedCard % 13}
+    }
+  }
+}
+
+let cardPicker = deck.createCardPicker()
+let pickedCard = cardPicker()
+
+console.log('card: ' + pickedCard.card + ' of ' + pickedCard.suit);
+```
 
 ### this 参数
 
