@@ -232,6 +232,53 @@ console.log('card: ' + pickedCard.card + ' of ' + pickedCard.suit);
 
 ### this 参数
 
+在上述的例子中 `this.suits[pickedSuit]` 的类型为 `any`，这是因为 `this` 来自对象字面量里的函数表达式。修改的方法是，提供一个显式的 `this` 参数。`this` 参数是个假的参数，它出现在参数列表的最前面。
+
+```typescript
+function f(this: void) {
+  // 确保 "this" 在此独立函数中不可用
+}
+```
+
+让我们往例子里添加一些接口，`Card` 和 `Deck`，让类型重用能够变得清晰简单些：
+
+```typescript
+interface Card {
+  suit: string
+  card: number
+}
+
+interface Deck {
+  suits: string[]
+  cards: number[]
+
+  createCardPicker (this: Deck): () => Card
+}
+
+let deck: Deck = {
+  suits: ['hearts', 'spades', 'clubs', 'diamonds'],
+  cards: Array(52),
+  createCardPicker: function() {
+    // NOTE: 函数现在显式指定其被调用方必须是 deck 类型
+    createCardPicker: function (this: Deck) {
+      return () => {
+        let pickedCard = Math.floor(Math.random() * 52)
+        let pickedSuit = Math.floor(pickedCard / 13)
+
+        return {suit: this.suits[pickedSuit], card: pickedCard % 13}
+      }
+    }
+  }
+}
+
+let cardPicker = deck.createCardPicker()
+let pickedCard = cardPicker()
+
+console.log('card: ' + pickedCard.card + ' of ' + pickedCard.suit);
+```
+
+现在 TypeScript 知道 `createCardPicker` 期望在某个 `Deck` 对象上调用。也就是说 `this` 是 `Deck` 类型的，而非 `any`。
+
 ### this 参数在回调函数里
 
 ## 重载
