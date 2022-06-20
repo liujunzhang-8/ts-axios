@@ -177,11 +177,178 @@ let buildNameFun (fname: string, ...rest: string[]) => string = buildName
 
 ## this
 
+学习如何在 JavaScript 里正确使用 `this` 就好比一场成年礼。由于 TypeScript 是 JavaScript 的超集，TypeScript 程序员也需要弄清 `this` 工作机制并且当有 bug 的时候能够找出错误所在。幸运的是，TypeScript 能通知你错误地使用了 `this` 的地方。
+
 ### this 和箭头函数
+
+JavaScript里，`this` 的值在函数被调用的时候才会指定。这是个既强大又灵活的特点，但是你需要花点时间弄清楚函数调用的上下文是什么。但众所周知，这不是一件很简单的事，尤其是在返回一个函数或将函数当作参数传递的时候。
+
+下面看一个例子：
+
+```typescript
+let deck = {
+  suits: ['hearts', 'spades', 'clubs', 'diamonds'],
+  cards: Array(52),
+  createCardPicker: function() {
+    return function() {
+      let pickedCard = Math.floor(Math.random() * 52)
+      let pickedSuit = Math.floor(pickedCard / 13)
+
+      return {suit: this.suits[pickedSuit], card: pickedCard % 13}
+    }
+  }
+}
+
+let cardPicker = deck.createCardPicker()
+let pickedCard = cardPicker()
+
+console.log('card: ' + pickedCard.card + ' of ' + pickedCard.suit);
+```
+
+可以看到 `createCardPicker` 是个函数，并且它又返回了一个函数。如果我们尝试运行这个程序，会发现它并没有输出而是报错了。因为 `createCardPicker` 返回的函数里的 `this` 被设置成了 `global` 而不是 `deck` 对象。因为我们只是独立的调用了 `cardPicker()`。顶级的非方法式调用会将 `this` 视为 `global`。
+
+为了解决这个问题，我们可以在函数被返回时就绑好正确的`this`。这样的话，无论之后怎么使用它，都会引用绑定的`deck`对象。我们需要改变函数表达式来使用 ECMAScript 6 箭头语法。箭头函数能保存函数创建时的 `this` 值，而不是调用时的值：
+
+```typescript
+let deck = {
+  suits: ['hearts', 'spades', 'clubs', 'diamonds'],
+  cards: Array(52),
+  createCardPicker: function() {
+    // 注意：这里使用箭头函数
+    return () => {
+      let pickedCard = Math.floor(Math.random() * 52)
+      let pickedSuit = Math.floor(pickedCard / 13)
+
+      return {suit: this.suits[pickedSuit], card: pickedCard % 13}
+    }
+  }
+}
+
+let cardPicker = deck.createCardPicker()
+let pickedCard = cardPicker()
+
+console.log('card: ' + pickedCard.card + ' of ' + pickedCard.suit);
+```
 
 ### this 参数
 
+在上述的例子中 `this.suits[pickedSuit]` 的类型为 `any`，这是因为 `this` 来自对象字面量里的函数表达式。修改的方法是，提供一个显式的 `this` 参数。`this` 参数是个假的参数，它出现在参数列表的最前面。
+
+```typescript
+function f(this: void) {
+  // 确保 "this" 在此独立函数中不可用
+}
+```
+
+让我们往例子里添加一些接口，`Card` 和 `Deck`，让类型重用能够变得清晰简单些：
+
+```typescript
+interface Card {
+  suit: string
+  card: number
+}
+
+interface Deck {
+  suits: string[]
+  cards: number[]
+
+  createCardPicker (this: Deck): () => Card
+}
+
+let deck: Deck = {
+  suits: ['hearts', 'spades', 'clubs', 'diamonds'],
+  cards: Array(52),
+  createCardPicker: function() {
+    // NOTE: 函数现在显式指定其被调用方必须是 deck 类型
+    createCardPicker: function (this: Deck) {
+      return () => {
+        let pickedCard = Math.floor(Math.random() * 52)
+        let pickedSuit = Math.floor(pickedCard / 13)
+
+        return {suit: this.suits[pickedSuit], card: pickedCard % 13}
+      }
+    }
+  }
+}
+
+let cardPicker = deck.createCardPicker()
+let pickedCard = cardPicker()
+
+console.log('card: ' + pickedCard.card + ' of ' + pickedCard.suit);
+```
+
+现在 TypeScript 知道 `createCardPicker` 期望在某个 `Deck` 对象上调用。也就是说 `this` 是 `Deck` 类型的，而非 `any`。
+
 ### this 参数在回调函数里
+
+你可以也看到过在回调函数里的 `this` 报错，当你将一个函数传递到某个库函数里稍后会被调用时。因为当回调被调用的时候，它们会被当成一个普通函数调用，`this` 将为 `undefined` 。稍作改动，你就可以通过 `this` 参数来避免错误。首先，库函数的作者要指定 `this` 的类型：
+
+```typescript
+interface UIElement {
+  addClickListener(onclick: (this: void, e: Event) => void): void
+}
+```
+
+`this: void` 意味着 `addClickListener` 期望传入的 `onclick` 方法不需要 `this`
+
+```typescript
+interface UIElement {
+  addClickListener (onclick: (this: void, e: Event) => void): void
+}
+
+class Handler {
+  type: string
+
+  onClickBad (this: Handler, e: Event) {
+    this.type = e.type
+  }
+}
+
+let h = new Handler()
+
+let uiElement: UIElement = {
+  addClickListener () {
+
+  }
+}
+
+uiElement.addClickListener(h.onClickBad) // error!
+```
+
+指定了 `this` 类型后，你显式声明 `onClickBad` 必须在 `Handler` 的实例上调用。然后 TypeScript 会检测到 `addClickListener` 要求函数带有 `this: void`。改变 `this` 类型来修复这个错误：
+
+```typescript
+class Handler {
+  type: string
+
+  onClickBad (this: void, e: Event) {
+    console.log('clicked!');
+  }
+}
+
+let h = new Handler()
+
+let uiElement: UIElement = {
+  addClickListener () {
+
+  }
+}
+
+uiElement.addClickListener(h.onClickBad)
+```
+
+因为 `onClickGood` 指定了 `this` 类型为 `void`，因此传递 `addClickListener` 是合法的。当然了，这也意味着不能使用 `this.info`。如果你两者都想要，你不得不使用箭头函数了：
+
+```typescript
+class Handler {
+  type: string
+  onClickGood = (e: Event) => {
+    this.type = e.type
+  }
+}
+```
+
+这是可行的因为箭头函数不会捕获 `this`，所以你总是可以把它们传给期望 `this.void` 的函数。
 
 ## 重载
 
