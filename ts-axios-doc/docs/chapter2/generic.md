@@ -6,6 +6,23 @@
 
 ## 基础示例
 
+下面来创建一个使用泛型的例子：`identity` 函数。这个函数会返回任何传入它的值。你可以把这个函数当成是 `echo` 命令。
+
+不用泛型的话，这个函数可能是下面这样：
+
+```typescript
+function identity(arg: number):number {
+  return arg
+}
+```
+或者，我们使用 `any` 类型来定义函数：
+
+```typescript
+function identity(arg: any): any {
+  return arg
+}
+```
+
 ## 使用泛型变量
 
 ## 泛型类型
