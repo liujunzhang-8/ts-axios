@@ -55,6 +55,16 @@ let output = identity('myString')
 
 ## 使用泛型变量
 
+使用泛型创建像 `identity` 这样的泛型函数时，编译器要求你在函数体必须正确的使用这个通用的类型。换句话说，你必须把这些参数当做是任意或所有类型。
+
+看下之前 `identity` 例子：
+
+```typescript
+function identity<T>(arg: T): {
+  return arg
+}
+```
+
 ## 泛型类型
 
 ## 泛型类
