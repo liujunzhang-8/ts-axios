@@ -55,6 +55,38 @@ let output = identity('myString')
 
 ## 使用泛型变量
 
+使用泛型创建像 `identity` 这样的泛型函数时，编译器要求你在函数体必须正确的使用这个通用的类型。换句话说，你必须把这些参数当做是任意或所有类型。
+
+看下之前 `identity` 例子：
+
+```typescript
+function identity<T>(arg: T): {
+  return arg
+}
+```
+
+如果我们想打印出 `arg` 的长度。我们很可能会这么做：
+
+```typescript
+function loggingIdentity<T>(arg: T): T {
+  console.log(arg.length);
+  return arg
+}
+```
+
+如果这么做，编译器会报错说我们使用了 `arg` 的 `.length` 属性，但是没有地方指明 `arg` 具有这个属性。记住，这些类型变量代表的是任意类型，所以使用这个函数的人可能传入的是个数字，而数字是没有 `.length` 属性的。
+
+现在假设我们想操作 `T` 类型的数组而不直接是 `T`。由于我们操作的是数组，所以 `.length` 属性是应该存在的。我们可以像创建其它数组一样创建这个数组：
+
+```typescript
+function loggingIdentity<T>(arg: T[]): T[] {
+  console.log(arg.length);
+  return arg
+}
+```
+
+你可以这样理解 `loggingIdentity` 的类型：泛型函数 `loggingIdentity`，接收类型参数 `T` 和参数 `arg`，它是个元素类型是 `T` 的数组，并返回元素类型是 `T` 的数组。如果我们传入数字数组，将返回一个数字数组，因为此时 `T` 的类型为 `number`。这可以让我们把泛型变量 `T`当作类型的一部分使用，而不是整个类型，增加了灵活性。
+
 ## 泛型类型
 
 ## 泛型类
