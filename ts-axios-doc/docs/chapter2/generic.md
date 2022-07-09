@@ -155,10 +155,53 @@ let myIdentity: GenericIdentityFn<number> = identity
 
 ## 泛型类
 
+泛型类看上去与泛型接口差不多。泛型类使用（`<>`）括起泛型类型，跟在类名后面。
+
+```typescript
+class GenericNumber<T> {
+  zeroValue: T
+  add: (x: T, y: T) => T
+}
+
+let myGenericNumber = new GenericNumber<number>()
+myGenericNumber.zeroValue = 0
+myGenericNumber.add = function(x, y) {
+  return x + y
+}
+```
+
+`GenericNumber` 类的使用是十分直观的，并且你可能已经注意到了，没有什么去限制它只能使用 `number` 类型。也可以使用字符串或其它更复杂的类型。
+
+```typescript
+let stringNumeric = new GenericNumber<string>()
+stringNumeric.zeroValue = ''
+stringNumeric.add = function(x, y) {
+  return x + y
+}
+
+console.log(stringNumeric.add(stringNumeric.zeroValue, 'test'));
+```
+
+与接口一样，直接把泛型类型放在类后面，可以帮助我们确认类的所有属性都在使用相同的类型。
+
+我们在[类](/chapter2/class)那节说过，类有两部分：静态部分和实例部分。泛型类指的是实例部分的类型，所以类的静态属性不能使用这个泛型类型。
 
 ## 泛型约束
 
 
+
+
 ### 在泛型约束中使用类型参数
 
+你可以声明一个类型参数，且它被另一个类型参数所约束。比如，现在我们想要用属性名从对象里获取这个属性。并且我们想要确保这个属性存在于对象 `obj` 上，因此我们需要在这两个类型之间使用约束。
 
+```typescript
+function getProperty<T, K extends keyof T> (obj: T, key: K) {
+  return obj[key]
+}
+
+let x = {a: 1, b: 2, c: 3, d: 4}
+
+getProperty(x, 'a') // okay
+getProperty(x, 'm') // error
+```
