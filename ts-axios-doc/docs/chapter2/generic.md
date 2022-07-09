@@ -189,6 +189,8 @@ console.log(stringNumeric.add(stringNumeric.zeroValue, 'test'));
 ## 泛型约束
 
 
+
+
 ### 在泛型约束中使用类型参数
 
 你可以声明一个类型参数，且它被另一个类型参数所约束。比如，现在我们想要用属性名从对象里获取这个属性。并且我们想要确保这个属性存在于对象 `obj` 上，因此我们需要在这两个类型之间使用约束。
@@ -203,5 +205,3 @@ let x = {a: 1, b: 2, c: 3, d: 4}
 getProperty(x, 'a') // okay
 getProperty(x, 'm') // error
 ```
-
-
