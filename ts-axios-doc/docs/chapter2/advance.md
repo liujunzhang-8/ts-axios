@@ -6,7 +6,40 @@
 
 我们大多是在混入（mixins）或其它不合适典型面向对象模型的地方看到交叉类型的使用。（在 JavaScript 里发生这种情况的场合很多！）下面是如何创建混入的一个简单例子：
 
+```typescript
+function extend<T, U> (first: T, second: U): T & U {
+  let result = {} as T & U
+  for (let id in first) {
+    result[id] = first[id] as any
+  }
+  for (let id in second) {
+    if (!result.hasOwnProperty(id)) {
+      result[id] = second[id] as any
+    }
+  }
+  return result
+}
 
+class Person {
+  constructor (public name: string) {
+
+  }
+}
+
+interface Loggable {
+  log(): void
+}
+
+class ConsoleLogger implements Loggable {
+  log() {
+    // ...
+  }
+}
+
+var jim = extend(new Person('Jim'), new ConsoleLogger())
+var n = jim.name
+jim.log()
+```
 
 ## 联合类型
 
