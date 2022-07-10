@@ -43,6 +43,22 @@ jim.log()
 
 ## 联合类型
 
+联合类型与交叉类型很有关联，但是使用上却完全不同。偶尔你会遇到这种情况，一个代码库希望传入 `number` 或 `string` 类型的参数。例如下面的函数：
+
+```typescript
+function padLeft(value: string, padding: any) {
+  if (typeof padding === 'number') {
+    return Array(padding + 1).join(' ') + value
+  }
+  if(typeof padding === 'string') {
+    return padding + value
+  }
+  throw new Error(`Expected string or number, got '${padding}'.`)
+}
+
+padLeft('Hello world', 4) // return " Hello world"
+```
+
 ## 类型保护
 
 ### 用户自定义的类型保护
