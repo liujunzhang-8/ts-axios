@@ -59,6 +59,46 @@ function padLeft(value: string, padding: any) {
 padLeft('Hello world', 4) // return " Hello world"
 ```
 
+`padLeft` 存在一个问题，`padding` 参数的类型指定成了 `any`。这就是说我们可以传入一个既不是 `number` 也不是 `string` 类型的参数，但是 TypeScript 却不报错。
+
+```typescript
+let indentedString = padLeft('Hello world', true) // 编译阶段通过，运行时报错
+```
+
+为了解决这个问题，我们可以使用 联合类型做为 `padding` 的参数：
+
+```typescript
+function padLeft(value: string, padding: string | number) {
+  // ...
+}
+
+let indentedString = padLeft('Hello world', true) // 编译阶段报错
+```
+
+联合类型表示一个值可以是几种类型之一。我们用竖线（`|`）分隔每个类型，所以 `number | string` 表示一个值可以是 `number` 或 `string` 。如果一个值是联合类型，我们只能访问此联合类型的所有类型里共有的成员。
+
+```typescript
+interface Bird {
+  fly()
+  layEggs()
+}
+
+interface Fish {
+  swim()
+  layEggs()
+}
+
+function getSmallPet(): Fish | Bird {
+  // ...
+}
+
+let pet = getSmallPet()
+pet.layEggs() // okay
+pet.swim()  // error
+```
+
+这里的联合类型可能有点复杂：如果一个值的类型是 `A | B`，我们能够确定的是它包含了 `A` 和 `B` 中共有的成员。这个例子里，`Fish` 具有一个 `swim` 方法，我们不能确定一个 `Bird | Fish` 类型的变量是否有 `swim` 方法。如果变量在运行时是 `Bird` 类型，那么调用 `pet.swim()` 就出错了。
+
 ## 类型保护
 
 ### 用户自定义的类型保护
