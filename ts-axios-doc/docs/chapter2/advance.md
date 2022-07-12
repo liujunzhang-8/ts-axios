@@ -103,9 +103,58 @@ pet.swim()  // error
 
 联合类型适合那些值可以为不同类型的情况。但当我们想确切地了解是否为 `Fish` 或者是 `Bird` 时怎么办？JavaScript 里常用来区分这 2 个可能值得方法是检查成员是否存在。如之前提及的，我们只能访问联合类型中共同拥有的成员。
 
+```typescript
+let pet = getSmallPet()
+
+// 每一个成员访问都会报错
+if(pet.swim) {
+  pet.swim()
+} else if (pet.fly) {
+  pet.fly()
+}
+```
+
+为了让这段代码工作，我们要使用类型断言：
+
+```typescript
+let pet = getSmallPet()
+
+if((pet as Fish).swim) {
+  (pet as Fish).swim()
+} else {
+  (pet as Bird).fly()
+}
+```
+
 ### 用户自定义的类型保护
 
+这里可以注意到我们不得不多次使用类型断言。如果我们一旦检查过类型，就能在之后的每个分支里清楚地知道 `pet` 的类型的话就好了。
+
+TypeScript 里的 *类型保护* 机制让它成为了现实。类型保护就是一些表达式，它们会在运行时检查以确保在某个作用域里的类型。定义一个类型保护，我们只要简单地定义一个函数，它的返回值是一个 *类性谓词*
+
+```typescript
+function isFish(pet: Fish | Bird): pet is Fish {
+  return (pet as Fish).swim !== undefined
+}
+```
+
+在这个例子里，`pet is Fish` 就是类型谓词，谓词为 `parameterName is Type` 这种形式，`parameterName` 必须来自于当前函数签名里的一个参数名。
+
+每当使用一些变量词 `isFish` 时，`TypeScript` 会将变量缩减为那个具体的类型。
+
+```typescript
+if (isFish(pet)) {
+  pet.swim()
+} else {
+  pet.fly()
+}
+```
+
+注意 `TypeScript` 不仅知道在 `if` 分支里 `pet` 是 `Fish` 类型：它还清楚在 `else` 分支里，一定不是 Fish 类型而是 `Bird` 类型。
+
 ### typeof 类型保护
+
+
 
 ### instanceof 类型保护
 
