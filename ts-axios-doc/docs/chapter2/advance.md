@@ -103,7 +103,32 @@ pet.swim()  // error
 
 联合类型适合那些值可以为不同类型的情况。但当我们想确切地了解是否为 `Fish` 或者是 `Bird` 时怎么办？JavaScript 里常用来区分这 2 个可能值得方法是检查成员是否存在。如之前提及的，我们只能访问联合类型中共同拥有的成员。
 
+```typescript
+let pet = getSmallPet()
+
+// 每一个成员访问都会报错
+if(pet.swim) {
+  pet.swim()
+} else if (pet.fly) {
+  pet.fly()
+}
+```
+
+为了让这段代码工作，我们要使用类型断言：
+
+```typescript
+let pet = getSmallPet()
+
+if((pet as Fish).swim) {
+  (pet as Fish).swim()
+} else {
+  (pet as Bird).fly()
+}
+```
+
 ### 用户自定义的类型保护
+
+
 
 ### typeof 类型保护
 
