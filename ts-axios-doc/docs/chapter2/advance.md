@@ -252,6 +252,34 @@ sn = undefined // error，'undefined' 不能赋值给 'string | null'
 
 ### 可选参数和可选属性
 
+使用了 `--strictNullChecks`，可选参数会被自动地加上 `undefined`：
+
+```typescript
+function f(x: number, y?: number) {
+  return x + (y || 0)
+}
+
+f(1, 2)
+f(1)
+f(1, undefined)
+f(1, null) // error, 'null' 不能赋值给 'number | undefined'
+```
+
+可选属性也会有同样的处理：
+
+```typescript
+class C {
+  a: number
+  b?: number
+}
+let c = new C()
+c.a = 12
+c.a = undefined // error, 'undefined' 不能赋值给 'number'
+c.b = 13
+c.b = undefined // ok
+c.b = null  // error, 'null' 不能赋值给 'number | undefined'
+```
+
 ### 类型保护和类型断言
 
 ## 字符串和字面量类型
