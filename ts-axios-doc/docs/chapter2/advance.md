@@ -235,6 +235,21 @@ if (pet instanceof Fish) {
 
 ## 可以为 null 的类型
 
+TypeScript 具有两种特殊的类型, `null` 和 `undefined`，它们分别具有值 `null` 和 `undefined`。我们在[基础类型](/chapter2/type) 一节里已经做过简要说明。默认情况下，类型检查器认为 `null` 与 `undefined` 可以赋值给任何类型。`null` 与 `undefined` 是所有其它类型的一个有效值。这也意味着，你阻止不了将它们赋值给其它类型，就算是你想要阻止这种情况也不行。
+
+`---strictNullChecks` 标记可以解决此错误：当你声明一个变量时，它不会自动地包含 `null` 或 `undefined`。你可以使用联合类型明确的包含它们：
+
+```typescript
+let s = 'foo'
+s = null // 错误，"null"不能赋值给 'string'
+let sn: string | null = 'bar'
+sn = null // 可以
+
+sn = undefined // error，'undefined' 不能赋值给 'string | null'
+```
+
+注意，按照 JavaScript 的语义，TypeScript 会把 `null` 和 `undefined` 区别对待。`string | null`，`string | undefined` 和 `string | undefined | null` 是不同的类型。
+
 ### 可选参数和可选属性
 
 ### 类型保护和类型断言
