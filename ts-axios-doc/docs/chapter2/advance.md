@@ -154,7 +154,42 @@ if (isFish(pet)) {
 
 ### typeof 类型保护
 
+现在我们回过头来看看怎么使用联合类型书写 `padLeft` 代码。我们可以像下面这样使用类型断言来写：
 
+```typescript
+function isNumber (x: any): x is string {
+  return typeof x === 'number'
+}
+
+function isString (x: any): x is string {
+  return typeof x === 'string'
+}
+
+function padLeft (value: string, padding: string | number) {
+  if (isNumber(padding)) {
+    return Array(padding + 1).join(' ') + value
+  }
+  if (isString(padding)) {
+    return padding + value
+  }
+  throw new Error(`Expected string or number, get '${padding}'.`)
+}
+```
+
+然而，你必须定义一个函数来判断类型是否是原始类型，但这并不重要。其实我们不必将 `typeof x === 'number'` 抽象成一个函数，因为 TypeScript 可以将它识别为一个类型保护。也就是说我们可以直接在代码里检查类型了。
+
+```typescript
+function padLeft (value: string, padding: string | number) {
+  if (typeof padding === 'number') {
+    return Array(padding + 1).join(' ') + value
+  }
+  if (typeof padding === 'string') {
+    return padding + value
+  }
+  throw new Error(`Expected string or number, get '${padding}'.`)
+}
+```
+这些 `typeof` 类型保护只有两种形式能被识别：`typeof v === 'typename'` 和 `typeof v !== 'typename'`, `"typename"` 必须是 `"number"`, `"string"`, `"boolean"` 或 `"symbol"`。但是 TypeScript 并不会阻止你与其它字符串比较，只是 TypeScript 不会把那些表达式识别为类型保护。
 
 ### instanceof 类型保护
 
