@@ -154,11 +154,101 @@ if (isFish(pet)) {
 
 ### typeof 类型保护
 
+现在我们回过头来看看怎么使用联合类型书写 `padLeft` 代码。我们可以像下面这样使用类型断言来写：
 
+```typescript
+function isNumber (x: any): x is string {
+  return typeof x === 'number'
+}
+
+function isString (x: any): x is string {
+  return typeof x === 'string'
+}
+
+function padLeft (value: string, padding: string | number) {
+  if (isNumber(padding)) {
+    return Array(padding + 1).join(' ') + value
+  }
+  if (isString(padding)) {
+    return padding + value
+  }
+  throw new Error(`Expected string or number, get '${padding}'.`)
+}
+```
+
+然而，你必须定义一个函数来判断类型是否是原始类型，但这并不重要。其实我们不必将 `typeof x === 'number'` 抽象成一个函数，因为 TypeScript 可以将它识别为一个类型保护。也就是说我们可以直接在代码里检查类型了。
+
+```typescript
+function padLeft (value: string, padding: string | number) {
+  if (typeof padding === 'number') {
+    return Array(padding + 1).join(' ') + value
+  }
+  if (typeof padding === 'string') {
+    return padding + value
+  }
+  throw new Error(`Expected string or number, get '${padding}'.`)
+}
+```
+这些 `typeof` 类型保护只有两种形式能被识别：`typeof v === 'typename'` 和 `typeof v !== 'typename'`, `"typename"` 必须是 `"number"`, `"string"`, `"boolean"` 或 `"symbol"`。但是 TypeScript 并不会阻止你与其它字符串比较，只是 TypeScript 不会把那些表达式识别为类型保护。
 
 ### instanceof 类型保护
 
+如果你已经阅读了 `typeof` 类型保护并且对 JavaScript 里的 `instanceof` 操作符熟悉的话，你可能已经猜到了这节的内容。
+
+`instanceof` 类型保护是通过构造函数来细化类型的一种方式。我们把之前的例子做一个小小的改造：
+
+```typescript
+class Bird {
+  fly () {
+    console.log('bird fly'); 
+  }
+
+  layEggs () {
+    console.log('bird lay eggs');
+  }
+}
+
+class Fish {
+  swim () {
+    console.log('fish swim');
+  }
+
+  layEggs () {
+    console.log('fish lay eggs')
+  }
+}
+
+function getRandomPet () {
+  return Math.random() > 0.5 ? new Bird() : new Fish()
+}
+
+let pet = getRandomPet ()
+
+if (pet instanceof Bird) {
+  pet.fly()
+}
+
+if (pet instanceof Fish) {
+  pet.swim()
+}
+```
+
 ## 可以为 null 的类型
+
+TypeScript 具有两种特殊的类型, `null` 和 `undefined`，它们分别具有值 `null` 和 `undefined`。我们在[基础类型](/chapter2/type) 一节里已经做过简要说明。默认情况下，类型检查器认为 `null` 与 `undefined` 可以赋值给任何类型。`null` 与 `undefined` 是所有其它类型的一个有效值。这也意味着，你阻止不了将它们赋值给其它类型，就算是你想要阻止这种情况也不行。
+
+`---strictNullChecks` 标记可以解决此错误：当你声明一个变量时，它不会自动地包含 `null` 或 `undefined`。你可以使用联合类型明确的包含它们：
+
+```typescript
+let s = 'foo'
+s = null // 错误，"null"不能赋值给 'string'
+let sn: string | null = 'bar'
+sn = null // 可以
+
+sn = undefined // error，'undefined' 不能赋值给 'string | null'
+```
+
+注意，按照 JavaScript 的语义，TypeScript 会把 `null` 和 `undefined` 区别对待。`string | null`，`string | undefined` 和 `string | undefined | null` 是不同的类型。
 
 ### 可选参数和可选属性
 
