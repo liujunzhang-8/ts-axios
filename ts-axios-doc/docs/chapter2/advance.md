@@ -282,6 +282,52 @@ c.b = null  // error, 'null' 不能赋值给 'number | undefined'
 
 ### 类型保护和类型断言
 
+由于可以为 `null` 的类型能和其它类型定义为联合类型，那么你需要使用类型保护来去除 `null`。幸运的是这与在 `JavaScript` 里写的代码一致：
+
+```typescript
+function f(sn: string | null): string {
+  if (sn === null) {
+    return 'default'
+  } else {
+    return sn
+  }
+}
+```
+
+这里很明显地去除了 `null`，你也可以使用短路运算符：
+
+```typescript
+function f(sn: string | null): string {
+  return sn || 'default'
+}
+```
+
+如果编译器不能够去除 `null` 或 `undefined`，你可以使用类型断言手动去除。语法是添加 `!` 后缀：`identifier!` 从 `identifier` 的类型里去除了 `null` 和 `undefined`：
+
+```typescript
+function broken (name: string | null): string {
+  function postfix(epithet: string) {
+    return name.charAt(0) + '. the' + epithet // error, 'name' 可能为 null
+  }
+  name = name || 'Bob'
+  return postfix('great')
+}
+
+function fixed (name: string | null): string {
+  function postfix(epithet: string) {
+    return name!.charAt(0) + '. the' + epithet // ok
+  }
+  name = name || 'Bob'
+  return postfix('great')
+}
+
+broken(null)
+```
+
+本例使用了嵌套函数，因为编译器无法去除嵌套函数的 `null` （除非是立即调用的函数表达式）。因为它无法跟踪所有对嵌套函数的调用，尤其是你将内层函数做为外层函数的返回值。如果无法知道函数在哪里被调用，就无法知道调用时 `name` 的类型。
+
 ## 字符串和字面量类型
 
 ## 总结
+
+
