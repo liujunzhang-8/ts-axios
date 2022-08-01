@@ -31,6 +31,15 @@ module.exports = {
                     'chapter2/advance'
                 ]
             },
+            {
+                title: 'ts-axios 项目初始化',
+                collapsable: false,
+                children: [
+                    'chapter3/require',
+                    'chapter3/init',
+                    'chapter3/base'
+                ]
+            }
         ]
     }
 }
