@@ -328,6 +328,38 @@ broken(null)
 
 ## 字符串和字面量类型
 
+字符串字面量类型允许你指定字符串必须具有的确切值。在实际应用中，字符串字面量类型可以与联合类型，类型保护很好的配合。通过组合使用这些特性，你可以实现类似枚举类型的字符串。
+
+```typescript
+type Easing = 'ease-in' | 'ease-out' | 'ease-in-out'
+
+class UIElement {
+  animate (dx: number, dy: number, easing: Easing) {
+    if (easing === 'ease-in') {
+      // ...
+    } else if (easing === 'ease-out') {
+
+    } else if (easing === 'ease-in-out') {
+
+    } else {
+      // error! 不能传入 null 或者 undefined
+    }
+  }
+}
+
+let button = new UIElement()
+button.animate(0, 0, 'ease-in')
+button.animate(0, 0, 'uneasy')  // error
+```
+
+你只能从三种允许的字符串中选择其一来做为参数传递，传入其它值则会产生错误。
+
+```
+Argument of type '"uneasy"' is not assignable to parameter of type '"ease-in" | "ease-out" | "ease-in-out"'
+```
+
 ## 总结
 
+那么到这里，我们的 TypeScript 常用语法学习就告一段落了，当然 TypeScript 还有其它的语法我们并没有讲，我们只是讲了 TypeScript 的一些常用语法，把这些知识掌握足以应付一般的开发了。如果你在使用 TypeScript 开发项目中遇到了其它的 TypeScript 语法知识，你可以通过 TypeScript 的[官网文档](https://www.typescriptlang.org/docs/home.html)学习。因为学基础最好的方法是去阅读它的官网文档，敲上面的小例子。其实这门课程的基础知识结构也是大部分参考了官网文档，要记住学习一门技术的基础官网文档永远是最好的一手资料。
 
+但是 TypeScript 的学习不能仅仅靠看官网文档，你还需要动手实践，在实践中你才能真正掌握 TypeScript。下一章开始重构。
