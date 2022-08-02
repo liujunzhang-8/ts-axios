@@ -32,14 +32,14 @@ module.exports = {
                 ]
             },
             {
-                title: 'ts-axios 项目初始化',
+                'title': 'ts-axios 项目初始化',
                 collapsable: false,
                 children: [
                     'chapter3/require',
                     'chapter3/init',
                     'chapter3/base'
                 ]
-            }
+            },
         ]
     }
 }
