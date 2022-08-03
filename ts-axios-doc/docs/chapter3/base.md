@@ -41,3 +41,56 @@ export default axios
 
 ### 定义 AxiosRequestConfig 接口类型
 
+接下来我们需要给 `config` 参数定义一种接口类型。我们创建一个 `types` 目录，在下面创建一个 `index.ts` 文件，作为我们项目中公用的类型定义文件。
+
+接下来我们来定义 `AxiosRequestConfig` 接口类型：
+
+```typescript
+export interface AxiosRequestConfig {
+  url: string
+  method?: string
+  data?: any
+  params?: any
+}
+```
+
+其中, `url` 为请求的地址，必选属性；而其余属性都是可选属性。`method` 是请求的 HTTP 方法；`data` 是 `post`、`patch` 等类型请求的数据，放到 `request body`中的；`params` 是 `get`、`head` 等类型请求的数据，拼接到 `url` 的 `query string` 中的。
+
+为了让 `method` 只能传入合法的字符串，我们定义一种字符串字面量类型 `Method`：
+
+```typescript
+export type Method = 'get' | 'GET'
+  | 'delete' | 'Delete'
+  | 'head' | 'HEAD'
+  | 'options' | 'OPTIONS'
+  | 'post' | 'POST'
+  | 'put' | 'PUT'
+  | 'patch' | 'PATCH'
+```
+
+接着我们把 `AxiosRequestConfig` 中的 `method` 属性类型改成这种字符串字面量类型：
+
+```typescript
+export interface AxiosRequestConfig {
+  url: string
+  method?: Method
+  data?: any
+  params?: any
+}
+```
+
+然后回到 `index.ts`，我们引入 `AxiosRequestConfig` 类型，作为 `config` 的参数类型，如下：
+
+```typescript
+import { AxiosRequestConfig } from "./types";
+
+function axios(config: AxiosRequestConfig) {
+
+}
+
+export default axios
+```
+
+那么接下来，我们就来实现这个函数体内部的逻辑——发送请求
+
+## 利用 XMLHttpRequest 发送请求
