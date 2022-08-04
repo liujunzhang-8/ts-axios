@@ -94,3 +94,51 @@ export default axios
 那么接下来，我们就来实现这个函数体内部的逻辑——发送请求
 
 ## 利用 XMLHttpRequest 发送请求
+
+我们并不想在 `index.ts` 中去实现发送请求的逻辑，我们利用模块化的编程思想，把这个功能拆分到一个单独的模块中。
+
+于是我们在 `src` 目录下创建一个 `xhr.ts` 文件，我们导出一个 `xhr` 方法，它接受一个 `config` 参数，类型也是 `AxiosRequestConfig` 类型。
+
+```typescript
+import { AxiosRequestConfig } from './types'
+
+export default function xhr(config: AxiosRequestConfig) {}
+```
+
+接下来，我们来实现这个函数体逻辑，如下：
+
+```typescript
+export default function xhr(config: AxiosRequestConfig): void {
+  const { data = null, url, method = 'get' } = config
+
+  const request = new XMLHttpRequest()
+
+  request.open(method.toUpperCase(), url, true)
+
+  request.send(data)
+}
+```
+
+我们首先通过解构赋值的语法从 `config` 中拿到对应的属性值赋值给我的变量，并且还定义了一些默认值，因为在 `AxiosRequestConfig` 接口的定义中，有些属性是可选的。
+
+接着我们实例化一个 `XMLHttpRequest` 对象，然后调用了它的 `open` 方法，传入了对应的一些参数，最后调用 `send` 方法发送请求。
+
+对于 `XMLHttpRequest` 的学习，我希望同学们去 [mdn](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) 上系统地学习一下它的一些属性和方法，当做参考资料，因为在后续的开发中我们可能会反复查阅这些文档资料。
+
+### 引入 xhr 模块
+
+编写好了 `xhr` 模块，我们就需要在 `index.ts` 中去引入这些模块，如下：
+
+```typescript
+import { AxiosRequestConfig } from './types'
+import xhr from './xhr'
+
+function axios(config: AxiosRequestConfig): void {
+  xhr(config)
+}
+
+export default axios
+```
+
+那么至此，我们基本的发送请求代码就编写完毕了，接下来我们来写一个小 demo，来使用我们编写的 axios 库去发送请求
+
