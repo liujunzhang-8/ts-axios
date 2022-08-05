@@ -274,3 +274,96 @@ module.exports = app.listen(port, () => {
 })
 ```
 
+### 编写 demo 代码
+
+首先在 `examples` 目录下创建 `index.html` 和 `global.css`，作为所有 `demo` 的入口文件以全局样式文件
+
+`index.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>ts-axios examples</title>
+    <link rel="stylesheet" href="/global.css">
+  </head>
+  <body style="padding: 0 20px">
+    <h1>ts-axios examples</h1>
+    <ul>
+      <li><a href="simple">Simple</a></li>
+    </ul>
+  </body>
+</html>
+```
+
+`global.css`
+
+```css
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  color: #2c3e50;
+}
+
+ul {
+  line-height: 1.5em;
+  padding-left: 1.5em;
+}
+
+a {
+  color: #7f8c8d;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #4fc08d;
+}
+```
+
+然后在 `examples` 目录下创建 `simple` 目录，作为本章节的 demo 目录，在该目录下再创建 `index.html` 和 `app.ts` 文件
+
+`index.html` 文件如下：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Simple example</title>
+  </head>
+  <body>
+    <script src="/__build__/simple.js"></script>
+  </body>
+</html>
+```
+
+`app.ts` 文件如下：
+
+```typescript
+import axios from '../../src/index'
+
+axios({
+  method: 'get',
+  url: '/simple/get',
+  params: {
+    a: 1,
+    b: 2
+  }
+})
+```
+
+因为我们这里通过 `axios` 发送了请求，那么我们的 server 端要实现对应的路由接口，我们来修改 `server.js`，添加如下代码：
+
+```javascript
+const router = express.Router()
+
+router.get('./simple/get', function(req, res) {
+  res.json({
+    msg: `hello world`
+  })
+})
+
+app.use(router)
+```
+
+
