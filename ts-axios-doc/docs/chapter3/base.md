@@ -142,3 +142,60 @@ export default axios
 
 那么至此，我们基本的发送请求代码就编写完毕了，接下来我们来写一个小 demo，来使用我们编写的 axios 库去发送请求
 
+## demo 编写
+
+我们会利用 Node.js 的 [`express`](http://expressjs.com/) 库去运行我们的 demo，利用 [`webpack`](https://webpack.js.org/) 来作为 demo 的构建工具。
+
+### 依赖安装
+
+我们先来安装一些编写 demo 需要的依赖包，如下：
+
+```
+"webpack": "^4.28.4",
+"webpack-dev-middleware": "^3.5.0",
+"webpack-hot-middleware": "^2.24.3",
+"ts-loader": "^5.3.3",
+"tslint-loader": "^3.5.4",
+"express": "^4.16.4",
+"body-parser": "^1.18.3"
+```
+
+其中，`webpack` 是打包构建工具，`webpack-dev-middleware` 和 `webpack-hot-middleware` 是 2 个`express` 的 `webpack` 中间件，`ts-loader` 和 `tslint-loader` 是 `webpack` 需要的 TypeScript 相关 loader，`express` 是 Node.js 的服务端框架，`body-parser` 是 `express` 的一个中间件，解析 `body` 数据用的。
+
+### 编写 webpack 配置文件
+
+在 `examples` 目录下创建 `webpack` 配置文件 `webpack.config.js`
+
+```javascript
+const fs = require('fs')
+const path = require('path')
+const webpack = require('webpack')
+
+module.export = {
+  mode: 'development',
+
+  /**
+   * 我们会在 examples 目录下建多个子目录
+   * 我们会把不同章节的 demo 放到不同的子目录中
+   * 每个子目录下会创建一个 app.ts
+   * app.ts 作为 webpack 构建的入口文件
+   * entries 收集了多目录个入口文件，并且每个入口还引入了一个用于热更新的文件
+   * entries 是一个对象，key 为目录名
+   */
+
+  entry: fs.readdirSync(__dirname).reduce((entries, dir) => {
+    const fullDir = path.join(__dirname, dir)
+    const entry = path.join(__fullDir, 'app.ts')
+    if(fs.statSync(fullDir).isDirectory() && fs.existsSync(entry)) {
+      entries[dir] = ['webpack-hot-middleware/client', entry]
+    }
+
+    return entries
+  }, {})
+
+  /**
+   * 根据不同的目录名称，打包生成目标 js，名称和目录名一致
+   */
+}
+```
+
