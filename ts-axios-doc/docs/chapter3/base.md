@@ -274,3 +274,116 @@ module.exports = app.listen(port, () => {
 })
 ```
 
+### 编写 demo 代码
+
+首先在 `examples` 目录下创建 `index.html` 和 `global.css`，作为所有 `demo` 的入口文件以全局样式文件
+
+`index.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>ts-axios examples</title>
+    <link rel="stylesheet" href="/global.css">
+  </head>
+  <body style="padding: 0 20px">
+    <h1>ts-axios examples</h1>
+    <ul>
+      <li><a href="simple">Simple</a></li>
+    </ul>
+  </body>
+</html>
+```
+
+`global.css`
+
+```css
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  color: #2c3e50;
+}
+
+ul {
+  line-height: 1.5em;
+  padding-left: 1.5em;
+}
+
+a {
+  color: #7f8c8d;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #4fc08d;
+}
+```
+
+然后在 `examples` 目录下创建 `simple` 目录，作为本章节的 demo 目录，在该目录下再创建 `index.html` 和 `app.ts` 文件
+
+`index.html` 文件如下：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Simple example</title>
+  </head>
+  <body>
+    <script src="/__build__/simple.js"></script>
+  </body>
+</html>
+```
+
+`app.ts` 文件如下：
+
+```typescript
+import axios from '../../src/index'
+
+axios({
+  method: 'get',
+  url: '/simple/get',
+  params: {
+    a: 1,
+    b: 2
+  }
+})
+```
+
+因为我们这里通过 `axios` 发送了请求，那么我们的 server 端要实现对应的路由接口，我们来修改 `server.js`，添加如下代码：
+
+```javascript
+const router = express.Router()
+
+router.get('./simple/get', function(req, res) {
+  res.json({
+    msg: `hello world`
+  })
+})
+
+app.use(router)
+```
+
+### 运行 demo
+
+接着我们在 `package.json` 中去新增一个 `npm script`：
+
+```
+"dev": "node examples/server.js"
+```
+
+然后我们去控制台执行命令
+
+```bash
+npm run dev
+```
+
+相当于执行了 `node example/server.js`，会开启我们的 server。
+
+接着我们打开 chrome 浏览器，访问 `http:localhost:8080/` 即可访问我们的 demo 了，我们点到 `Simple` 目录下，通过开发者工具的 network 部分我们可以看到 成功发送
+到了一条请求，并在 response 中看到了服务端返回的数据。
+
+至此，我们就实现了一个简单的请求发送，并编写了相关的 demo。但是现在存在一些问题：我们传入的 `params` 数据并没有用，也没有拼接到 `url` 上；
+我们对 request body 的数据格式、请求头 headers 也没有做处理；另外我们虽然从网络层面收到了响应的数据，但是我们代码层面并没有对响应的数据做处理。那么下面一章，我们就来解决这些问题。
