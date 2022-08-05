@@ -366,4 +366,24 @@ router.get('./simple/get', function(req, res) {
 app.use(router)
 ```
 
+### 运行 demo
 
+接着我们在 `package.json` 中去新增一个 `npm script`：
+
+```
+"dev": "node examples/server.js"
+```
+
+然后我们去控制台执行命令
+
+```bash
+npm run dev
+```
+
+相当于执行了 `node example/server.js`，会开启我们的 server。
+
+接着我们打开 chrome 浏览器，访问 `http:localhost:8080/` 即可访问我们的 demo 了，我们点到 `Simple` 目录下，通过开发者工具的 network 部分我们可以看到 成功发送
+到了一条请求，并在 response 中看到了服务端返回的数据。
+
+至此，我们就实现了一个简单的请求发送，并编写了相关的 demo。但是现在存在一些问题：我们传入的 `params` 数据并没有用，也没有拼接到 `url` 上；
+我们对 request body 的数据格式、请求头 headers 也没有做处理；另外我们虽然从网络层面收到了响应的数据，但是我们代码层面并没有对响应的数据做处理。那么下面一章，我们就来解决这些问题。
