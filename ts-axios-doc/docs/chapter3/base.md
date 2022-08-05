@@ -196,6 +196,81 @@ module.export = {
   /**
    * 根据不同的目录名称，打包生成目标 js，名称和目录名一致
    */
+  output: {
+    path: path.join(__dirname, '__build__'),
+    filename: '[name].js',
+    publicPath: '/__build__'
+  },
+
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        enforce: 'pre',
+        use: [
+          {
+            loader: 'tslint-loader'
+          }
+        ]
+      },
+      {
+        test: /\.tsx?$/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true
+            }
+          }
+        ]
+      }
+    ]
+  },
+
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js']
+  },
+
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin()
+  ]
 }
+```
+
+### 编写 server 文件
+
+在 `examples` 目录下创建 `server.js` 文件：
+
+```javascript
+const express = require('express')
+const bodyParser = require('body-parser')
+const webpack = require('webpack')
+const webpackDevMiddleware = require('webpack-dev-middleware')
+const webpackHotMiddleware = require('webpack-hot-middleware')
+const webpackConfig = require('./webpack.config')
+
+const app = express()
+const compiler = webpack(webpackConfig)
+
+app.use(webpackDevMiddleware(compiler, {
+  publicPath: '/__build__/',
+  stats: {
+    color: true,
+    chunks: false
+  }
+}))
+
+app.use(webpackHotMiddleware(compiler))
+
+app.use(express.static(__dirname))
+
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extened: true}))
+
+const port = process.env.PORT || 8080
+module.exports = app.listen(port, () => {
+  console.log(`Server listening on http://localhost: ${port}，Ctrl+c to stop`);
+})
 ```
 
