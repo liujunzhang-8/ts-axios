@@ -40,6 +40,26 @@ module.exports = {
                     'chapter3/base'
                 ]
             },
+            {
+                'title': 'ts-axios 基础功能实现',
+                collapsable: false,
+                children: [
+                    'chapter4/url',
+                    'chapter4/data',
+                    'chapter4/header',
+                    'chapter4/response',
+                    'chapter4/response-header',
+                    'chapter4/response-data',
+                ]
+            },
+            {
+                'title': 'ts-axios 异常情况处理',
+                collapsable: false,
+                children: [
+                    'chapter5/error',
+                    'chapter5/enhance',
+                ]
+            }
         ]
     }
 }
