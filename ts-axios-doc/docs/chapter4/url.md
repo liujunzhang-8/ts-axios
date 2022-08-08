@@ -205,4 +205,28 @@ export function isObject (val: any): val is Object {
 
 ## 实现 url 参数处理逻辑
 
+我们已经实现了 `buildURL` 函数，接下来我们来利用它实现 `url` 参数的处理逻辑。
 
+在 `index.ts` 文件中添加如下代码：
+
+```typescript
+function axios (config: AxiosRequestConfig): void {
+  processConfig(config)
+  xhr(config)
+}
+
+function processConfig (config: AxiosRequestConfig): void {
+  config.url = transformUrl(config)
+}
+
+function transformUrl (config: AxiosRequestConfig): void {
+  const { url, params } = config
+  return buildURL(url, params)
+}
+```
+
+在执行 `xhr` 函数前，我们先执行 `processConfig` 方法，对 `config` 中的数据做处理，除了对 `url` 和 `params` 处理之外，未来还会处理其它属性。
+
+在 `processConfig` 函数内部，我们通过执行 `transformUrl` 函数修改了 `config.url`，该函数内部调用了 `buildURL`。
+
+那么至此，我们对 `url` 参数处理逻辑就实现完了，接下来我们就开始编写 demo 了。
