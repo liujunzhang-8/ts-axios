@@ -230,3 +230,99 @@ function transformUrl (config: AxiosRequestConfig): void {
 在 `processConfig` 函数内部，我们通过执行 `transformUrl` 函数修改了 `config.url`，该函数内部调用了 `buildURL`。
 
 那么至此，我们对 `url` 参数处理逻辑就实现完了，接下来我们就开始编写 demo 了。
+
+## demo 编写
+
+在 `examples` 目录下创建 `base` 目录，在 `base` 目录下创建 `index.html`：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Base example</title>
+  </head>
+  <body>
+    <script src="/__build__/base.js"></script>
+  </body>
+</html>
+```
+
+接着创建 `app.ts` 作为入口文件：
+
+```typescript
+import axios from '../../src/index'
+
+axios({
+  method: 'get',
+  url: '/base/get',
+  params: {
+    foo: ['bar', 'baz']
+  }
+})
+
+axios({
+  method: 'get',
+  url: '/base/get',
+  params: {
+    foo: {
+      bar: 'baz'
+    }
+  }
+})
+
+const date = new Date()
+
+axios({
+  method: 'get',
+  url: '/base/get',
+  params: {
+    date
+  }
+})
+
+axios({
+  method: 'get',
+  url: '/base/get',
+  params: {
+    foo: '@:$, '
+  }
+})
+
+axios({
+  method: 'get',
+  url: '/base/get',
+  params: {
+    foo: 'bar',
+    baz: null
+  }
+})
+
+axios({
+  method: 'get',
+  url: '/base/get#hash',
+  params: {
+    foo: 'bar'
+  }
+})
+
+axios({
+  method: 'get',
+  url: '/base/get?foo=bar',
+  params: {
+    bar: 'baz'
+  }
+})
+```
+
+接着在 `server.js` 添加新的接口路由：
+
+```typescript
+router.get('/base/get', function (req, res) {
+  res.json(req.query)
+})
+```
+
+然后在命令行运行 `npm run dev`，接着打开 chrome 浏览器，访问 `http://localhost:8080/` 即可访问我们的 demo 了，我们点到 `Base` 目录下，通过开发者工具的 network 部分我们可以看到成功发送的多条请求，并可以观察它们最终请求的 url，已经如期添加了请求参数。
+
+那么至此我们的请求 `url` 参数处理编写完了，下一小节我们会对 `request body` 数据做处理。
