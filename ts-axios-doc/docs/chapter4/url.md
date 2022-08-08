@@ -126,3 +126,83 @@ axios({
 最终请求的 `url` 是 `/base/get?foo=bar&bar=baz`
 
 ## buildURL 函数实现
+
+根据我们之前的需求分析，我们要实现一个工具函数，把 `params` 拼接到 `url` 上。我们希望把项目中的一些工具函数、辅助方法独立管理，于是我们创建一个 `helpers` 目录，在这个目录下创建 `url.ts` 文件，未来会把处理 `url` 相关的工具函数都放在该文件中。
+
+`helpers/url.ts`：
+
+```typescript
+import { isDate, isObject  } from "./util";
+
+function encode(val: string): string {
+  return encodeURIComponent(val)
+    .replace(/%40/g, '@')
+    .replace(/%3A/gi, ':')
+    .replace(/%24/g, '$')
+    .replace(/%2C/gi, ',')
+    .replace(/%20/g, '+')
+    .replace(/%5B/gi, '[')
+    .replace(/%5D/gi, ']')
+}
+
+export function buildURL (url: string, params?: any) {
+  if (!params) {
+    return url
+  }
+
+  const parts: string[] = []
+
+  Object.keys(params).forEach((key) => {
+    let val = params[key]
+    if (val === null || typeof val === 'undefined') {
+      return
+    }
+    let values: string[]
+    if(Array.isArray(val)) {
+      values = val
+      key += '[]' 
+    } else {
+      values = [val]
+    }
+    values.forEach((val) => {
+      if (isDate(val)) {
+        val = val.toISOString()
+      } else if (isObject(val)) {
+        val = JSON.stringify(val)
+      }
+      parts.push(`${encode(key)} = ${encode(val)}`)
+    })
+  })
+
+  let serializedParams = parts.join('&')
+
+  if(serializedParams) {
+    const markIndex = url.indexOf('#')
+    if (markIndex !== -1) {
+      url = url.slice(0, markIndex)
+    }
+
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams
+  }
+
+  return url
+}
+```
+
+`helpers/util.ts`
+
+```typescript
+const toString = Object.prototype.toString
+
+export function isDate (val: any): val is Date {
+  return toString.call(val) === '[object Date]'
+}
+
+export function isObject (val: any): val is Object {
+  return val !== null && typeof val === 'object'
+}
+```
+
+## 实现 url 参数处理逻辑
+
+
