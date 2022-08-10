@@ -102,4 +102,89 @@ function handleResponse(response: AxiosResponse) {
 
 ## demo 编写
 
+在 `examples` 目录下创建 `error` 目录，在 `error` 目录下创建 `index.html`
 
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Error example</title>
+  </head>
+  <body>
+    <script src="/__build__/error.js"></script>
+  </body>
+</html>
+```
+
+接着创建 `app.ts` 作为入口文件：
+
+```typescript
+import axios from '../../src/index'
+
+axios({
+  method: 'get',
+  url: '/error/get1',
+}).then(res => {
+  console.log(res);
+}).catch(e => {
+  console.log(e);
+})
+
+axios({
+  method: 'get',
+  url: '/error/get',
+}).then(res => {
+  console.log(res);
+}).catch(e => {
+  console.log(e);
+})
+
+setTimeout(() => {
+  axios({
+    method: 'get',
+    url: '/error/get',
+  }).then(res => {
+    console.log(res);
+  }).catch(e => {
+    console.log(e);
+  })
+}, 5000);
+
+axios({
+  method: 'get',
+  url: '/error/timeout',
+  timeout: 2000
+}).then(res => {
+  console.log(res);
+}).catch(e => {
+  console.log(e.message);
+})
+```
+
+接着在 `server.js` 添加新的接口路由：
+
+```typescript
+router.get('/error/get', function(req, res) {
+  if (Math.random() > 0.5) {
+    res.json({
+      msg: `hello world`
+    })
+  } else {
+    res.status(500)
+    res.end()
+  }
+})
+
+router.get('/error/timeout', function(req, res) {
+  setTimeout(() => {
+    res.json({
+      msg: `hello world`
+    })
+  }, 3000)
+})
+```
+
+然后在命令行运行 `npm run dev`，接着打开 chrome 浏览器，访问 `http://localhost:8080/` 即可访问我们的 demo 了，我们点到 `Error` 目录下，通过开发者工具的 network 部分我们可以看到不同的错误情况。
+
+至此我们对各种错误都做了处理，并把它们抛给了程序应用方，让它们对错误可以做进一步的处理。但是这里我们的错误都仅仅是简单的 Error 实例，只有错误文本信息，并不包含是哪个请求，请求的配置、响应对象等其它信息。那么下一节课，我们会对错误信息做增强。
