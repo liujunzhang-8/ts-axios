@@ -131,3 +131,37 @@ function handleResponse(response: AxiosResponse) {
 
 ## 导出类型定义
 
+在 demo 中，TypeScript 并不能把 `e` 参数推断为 `AxiosError` 类型，于是我们需要手动指明类型，为了让外部应用能引入 `AxiosError` 类型，我们也需要把它们导出。
+
+我们创建 `axios.ts` 文件，把之前的 `index.ts` 的代码拷贝过去，然后修改 `index.ts` 的代码。
+
+`index.ts`：
+
+```typescript
+import axios from './axios'
+
+export * from './types'
+
+export default axios
+```
+
+这样我们在 demo 中就可以引入 `AxiosError` 类型了。
+
+`examples/error/app.ts`：
+
+```typescript
+import axios, { AxiosError } from '../../src/index'
+
+axios({
+  method: 'get',
+  url: '/error/timeout',
+  timeout: 2000
+}).then(res => {
+  console.log(res);
+}).catch(e: AxiosError => {
+  console.log(e.message);
+  console.log(e.code)
+})
+```
+
+至此，我们关于 `ts-axios` 的异常处理逻辑就告一段落。下面章节，我们会对 `ts-axios` 的接口做扩展，让它提供更多好用和方便的 API。
