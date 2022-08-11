@@ -37,8 +37,59 @@ export interface AxiosError extends Error {
   isAxiosError: boolean
 }
 ```
+接着我们创建 `error.ts` 文件，然后实现 `AxiosError` 类，它是继承于 `Error` 类。
+
+`helpers/error.ts`：
+
+```typescript
+import { AxiosRequestConfig, AxiosResponse } from "../types";
+
+export class AxiosError extends Error {
+  isAxiosError: boolean
+  config: AxiosRequestConfig
+  code?: string | null
+  request?: any
+  response?: AxiosResponse
+
+  constructor(
+    message: string,
+    config: AxiosRequestConfig,
+    code?: string | null,
+    request?: any,
+    response?: AxiosResponse
+  ) {
+    super(message)
+
+    this.config = config
+    this.code = code
+    this.request = request
+    this.response = response
+    this.isAxiosError = true
+
+    Object.setPrototypeOf(this, AxiosError.prototype)
+  }
+}
+
+export function createError(
+  message: string,
+  config: AxiosRequestConfig,
+  code?: string | null,
+  request?: any,
+  response?: AxiosResponse
+): AxiosError {
+  const error = new AxiosError(message, config, code, request, response)
+
+  return error
+}
+```
+
+`AxiosError` 继承于 `Error` 类，添加了一些自己的属性：`config`、`code`、`request`、`response`、`isAxiosError` 等属性。这里要注意一点，我们使用了 `Object.setPrototypeOf(this, AxiosError.prototype)`，这段代码的目的是为了解决 TypeScript 继承一些内置对象的时候的坑，[参考](https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work)。
+
+另外，为了方便使用，我们对外暴露了一个 `createError` 的工厂方法。
 
 ## createError 方法应用
+
+修改关于错误对象创建部分的逻辑，如下：
 
 ## 导出类型定义
 
