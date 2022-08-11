@@ -91,5 +91,43 @@ export function createError(
 
 修改关于错误对象创建部分的逻辑，如下：
 
+`xhr.ts`：
+
+```typescript
+import { createError } from './helpers/error'
+
+request.onerror = function handleError() {
+  reject(createError(
+    'Network Error',
+    config,
+    null,
+    request
+  ))
+}
+
+request.ontimeout = function handleTimeout() {
+  reject(createError(
+    `Timeout of ${config.timeout} ms exceeded`,
+    config,
+    'ECONABORTED',
+    request
+  ))
+}
+
+function handleResponse(response: AxiosResponse) {
+  if(response.status >= 200 && response.status < 300) {
+    resolve(response)
+  } else {
+    reject(createError(
+      `Request failed with status code ${response.status}`,
+      config,
+      null,
+      request,
+      response
+    ))
+  }
+}
+```
+
 ## 导出类型定义
 
