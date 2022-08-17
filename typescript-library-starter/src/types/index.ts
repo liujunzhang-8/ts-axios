@@ -1,4 +1,5 @@
 export type Method = 'get' | 'GET'
+import axios from './../index';
   | 'delete' | 'Delete'
   | 'head' | 'HEAD'
   | 'options' | 'OPTIONS'
@@ -58,4 +59,21 @@ export interface Axios {
   patch<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
 }
 
+export interface AxiosIntance extends Axios {
+  <T = any>(config: AxiosRequestConfig): AxiosPromise<T>
+  <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
+}
 
+export interface AxiosInterceptorManage<T> {
+  use(resolved: ResolvedFn<T>, rejected?: RejectedFn): number
+
+  object(id: number): void
+}
+
+export interface ResolvedFn<T> {
+  (val: T): T | Promise<T>
+}
+
+export interface RejectedFn {
+  (error: any): any
+}
