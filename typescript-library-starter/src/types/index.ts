@@ -1,5 +1,4 @@
 export type Method = 'get' | 'GET'
-import axios from './../index';
   | 'delete' | 'Delete'
   | 'head' | 'HEAD'
   | 'options' | 'OPTIONS'
