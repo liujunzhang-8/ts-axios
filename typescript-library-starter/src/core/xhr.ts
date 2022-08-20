@@ -40,6 +40,26 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       handleResponse(response)
     }
 
+    request.onerror = function handleError() {
+      reject(createError('Network Error', config, null, request))
+    }
+
+    request.ontimeout = function handleTimeout() {
+      reject(
+        createError(`Timeout of ${config.timeout} ms exceeded`, config,'ECONNABORTED', request)
+      )
+    }
+
+    Object.keys(headers).forEach(name => {
+      if (data === null && name.toLowerCase() === 'content-type') {
+        delete headers[name]
+      } else {
+        request.setRequestHeader(name, headers[name])
+      }
+    })
+
+    request.send(data)
+
     function handleResponse(response: AxiosResponse): void {
       if (response.status >= 200 && response.status < 300) {
         resolve(response)
