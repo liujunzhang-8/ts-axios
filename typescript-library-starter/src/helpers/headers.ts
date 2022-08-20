@@ -12,7 +12,7 @@ function normalizeHeaderName(headers: any, normalizedName: string): void {
   })
 }
 
-export function processHeader(headers: any, data: any): any {
+export function processHeaders(headers: any, data: any): any {
   normalizeHeaderName(headers, 'Content-Type')
 
   if (isPlainObject(data)) {
