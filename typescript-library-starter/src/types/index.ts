@@ -63,10 +63,10 @@ export interface AxiosIntance extends Axios {
   <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
 }
 
-export interface AxiosInterceptorManage<T> {
+export interface AxiosInterceptorManager<T> {
   use(resolved: ResolvedFn<T>, rejected?: RejectedFn): number
 
-  object(id: number): void
+  eject(id: number): void
 }
 
 export interface ResolvedFn<T> {
