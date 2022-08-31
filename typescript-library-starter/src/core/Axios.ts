@@ -62,19 +62,19 @@ export default class Axios {
   }
 
   delete(url: string, config?: AxiosRequestConfig): AxiosPromise {
-    return this._requestMethodWithoutData('get', url, config)
+    return this._requestMethodWithoutData('delete', url, config)
   }
 
   head(url: string, config?: AxiosRequestConfig): AxiosPromise {
-    return this._requestMethodWithoutData('get', url, config)
+    return this._requestMethodWithoutData('head', url, config)
   }
 
   options(url: string, config?: AxiosRequestConfig): AxiosPromise {
-    return this._requestMethodWithoutData('get', url, config)
+    return this._requestMethodWithoutData('options', url, config)
   }
 
   post(url: string, config?: AxiosRequestConfig): AxiosPromise {
-    return this._requestMethodWithData('get', url, config)
+    return this._requestMethodWithData('post', url, config)
   }
 
   put(url: string, config?: AxiosRequestConfig): AxiosPromise {
