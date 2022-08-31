@@ -59,6 +59,23 @@ module.exports = {
                     'chapter5/error',
                     'chapter5/enhance',
                 ]
+            },
+            {
+                'title': 'ts-axios 接口扩展',
+                collapsable: false,
+                children: [
+                    'chapter6/error',
+                    'chapter6/enhance',
+                    'chapter6/enhance',
+                ]
+            },
+            {
+                'title': 'ts-axios 拦截器实现',
+                collapsable: false,
+                children: [
+                    'chapter7/error',
+                    'chapter7/enhance',
+                ]
             }
         ]
     }
