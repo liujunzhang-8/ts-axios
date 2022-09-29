@@ -1,6 +1,10 @@
-import { AxiosIntance } from './types'
+import { AxiosRequestConfig,AxiosIntance } from './types'
 import Axios from './core/Axios'
 import { extend } from './helpers/util'
+import defaults from './defaults'
+import mergeConfig from './core/mergeConfig'
+import CancelToken from './cancel/CancelToken'
+import Cancel, { isCancel } from './cancel/Cancel'
 
 
 function createInstance(): AxiosIntance {
@@ -12,6 +16,6 @@ function createInstance(): AxiosIntance {
   return instance as AxiosIntance
 }
 
-const axios = createInstance()
+const axios = createInstance(defaults)
 
 export default axios
